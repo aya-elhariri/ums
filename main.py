@@ -1,9 +1,10 @@
 # mohmmed: 
+from datetime import date 
 class student:
 
     available_courses = ["Advanced programming" , "fundementals of programming" , "physics 112" , "Math 111" , "DLD"]
 
-    def __init__(self, student_name , student_id , major , email):
+    def __init__(self, student_name , student_id , major , email ):
         self.student_name = student_name
         self.student_id = student_id
         self.major = major
@@ -12,9 +13,9 @@ class student:
         self.grades = {}
 
 
-    def enroll_course(self):
+    def enroll_course(self , course):
         
-        if course in available_courses:
+        if course in self.available_courses:
             self.courses_enrolled.append(course)
             print (f"{self.student_name} has enrolled in {course}")
 
@@ -22,10 +23,10 @@ class student:
             print(f" no such course as {course}")
 
 
-    def drop_course(self):
-        if course in available_courses:
+    def drop_course(self , course):
+        if course in self.available_courses:
 
-            if course in courses_enrolled:
+            if course in self.courses_enrolled:
                 self.courses_enrolled.remove(course)
                 print(f"{self.student_name} has dropped {course}")
 
@@ -46,10 +47,75 @@ class student:
 #how do i make it so that it shows the grade of each enrolled course , based on the grade assigned from the "view_grade"
 
     def get_info(self):
+        print("****************************STUDENT INFO****************************")
+
         print(f"Student's name : {self.student_name} , Student's id : {self.student_id} , student's major : {self.major}")
         print(f"student's email : {self.email}")
         print(f"Student's enrolled courses : {self.courses_enrolled}") 
-    
+
+        print("********************************************************************")
+
+
+
+
+
+class Exam:
+    def __init__(self , exam_id , course ,  duration , student_results ,exam_date=None):
+        self.exam_id = exam_id
+        self.course = course
+        self.exam_date = exam_date      
+        self.duration = duration
+        self.student_results = {}
+
+    def schedule_exam(self , year , month , day):
+        while True:
+            try:
+                self.exam_date = date(year , month , day)
+                break
+            except ValueError:
+                print("Invalid date. please enter a valid date")
+            
+
+
+    def record_result(self , score , student_name):
+        self.student_results[student_name] = score
+        print(f"{student_name}' results have been saved as {score}")
+       
+
+    def display_student_results(self):
+        print("")
+        print("****************************EXAM RESULTS****************************")
+        print(f"result for exam {self.exam_id} in course {self.course} : ")
+        for student, score in self.student_results.items():
+            print(f"student : {student}'s score is {score}")
+        print("********************************************************************")
+
+    def view_exam_info(self):
+        print(" ")
+        print("*****************************EXAM INFO*****************************")
+        print(f"exam ID : {self.exam_id} , course : {self.course}")
+        if self.exam_date:
+            print(f"{self.exam_id} is scheduled for {self.exam_date.strftime('%y-%m-%d')}" )
+        else:
+            print("exam has no scheduled date yet")
+        print("*******************************************************************")
+
+
+################################################################################################################################
+std = student("mohamed" , 124234 , "Cns" , "user@gmail.com" )
+std.enroll_course("physics 112")
+std.enroll_course("DLD")
+std.enroll_course("chemistry")
+std.get_info()
+
+
+ex = Exam(1423 , "Advanced programming" , None , None , None )
+ex.schedule_exam(2024,5,26)
+ex.record_result("57/60" , "Mohamed")
+ex.display_student_results()
+ex.view_exam_info()
+
+ 
 # adham:
 # arwa:
 # habiba:
