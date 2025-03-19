@@ -121,6 +121,34 @@ ex.view_exam_info()
 # habiba:
 # aya:
 
+class Admin:    
+    student_course_dict = {}
+    def __init__(self, admin_id, name, role, contact_info):
+        self.admin_id = admin_id
+        self.name = name
+        self.role = role
+        self.contact_info = contact_info
+
+    def add_student(self, course, student):
+        if course not in Admin.student_course_dict:
+            Admin.student_course_dict[course] = []  
+        Admin.student_course_dict[course].append(student)
+
+    def remove_student(self, course, student):
+        if course in Admin.student_course_dict:
+            if student in Admin.student_course_dict[course]:
+                Admin.student_course_dict[course].remove(student)
+
+    def assign_professor(self, course, professor):
+        #lma n3ml class el course
+        pass
+
+    #msh fahma 3aiez eih
+    def manage_course(self):
+        pass
+
+
+
 class User:
     # eldoctor mkansh kateb password bs m7tagenha fe el login
     def __init__(self, user_id, name, role, email, __password):
@@ -132,7 +160,7 @@ class User:
         self.logged_in = False
 
     def login(self, email, password):
-        if email == self.email and password == self.password:
+        if email == self.email and password == self.__password:
             print("logged in sucessfully")
             #3aizen n3ml option eno y create account
         else:
