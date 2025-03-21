@@ -118,7 +118,6 @@ ex.view_exam_info()
  
 # adham:
 # arwa:
-# habiba:
 # aya:
 
 class Admin:    
@@ -175,7 +174,7 @@ class User:
         print(f"user data: /n Name: {self.name} /n role: {self.role} /n Id: {self.user_id} /n Email: {self.email}")
 
 
-
+# habiba:
 class professor:
     def __init__(self,name ,professor_id,email,department):
         self.name = name
