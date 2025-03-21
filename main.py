@@ -173,3 +173,53 @@ class User:
     def view_dashboard(self):
         print(f"Dashboard of : {self.name}")
         print(f"user data: /n Name: {self.name} /n role: {self.role} /n Id: {self.user_id} /n Email: {self.email}")
+
+
+
+class professor:
+    def __init__(self,name ,professor_id,email,department):
+        self.name = name
+        self.professor_id = professor_id
+        self .email = email
+        self.department = department
+        self.courses_taught = []
+        self.contact_info = []
+        self.grades ={}
+        
+        
+    def assign_grades(self,student_name,course,grade):
+        if 0<=grade<=100:
+          if student_name not in self.grades:
+              self.grades[student_name] = {}  
+              self.grades[student_name][course] = grade 
+              print(f"student name is:,{student_name},course:,{course},the grade assigned:,{grade}")
+              
+              
+              
+    def view_students(self):
+        if not self.grades:
+            print("No students have been assigned grades.")
+        else:
+
+            for student, courses in self.grades.items():
+                print(f"Student: {student}")
+            for course, grade in courses.items():
+                    print(f"  Course: {course}, Grade: {grade}")
+
+    
+    
+    
+    def get_professor_info(self):
+        print(f"professor name:,{self.name},id:,{self.professor_id},email:,{self.email},department:,{self.department}")
+        
+        
+        
+prof1=professor("dr.john","p799776","john@gmail.com","computer science")
+prof1.assign_grades("ahmad","math",78)
+prof1.assign_grades("ghadeer","german",88)
+prof1.assign_grades("kim","math",56)
+prof1.view_students()
+
+
+
+
