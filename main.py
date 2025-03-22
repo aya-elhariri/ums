@@ -118,6 +118,81 @@ ex.view_exam_info()
  
 # adham:
 # arwa:
+class Department:
+    def __init__(self, department_id, name, head_of_department, courses_offered, faculty_members):
+        self.department_id = department_id
+        self.name = name
+        self.head_of_department = head_of_department
+        self.courses_offered = courses_offered  # List of courses
+        self.faculty_members = faculty_members  # List of professors
+
+    def get_department_info(self):
+        return {
+            "Department ID": self.department_id,
+            "Name": self.name,
+            "Head of Department": self.head_of_department,
+            "Courses Offered": self.courses_offered,
+            "Faculty Members": self.faculty_members
+        }
+
+    def list_courses(self):
+        return self.courses_offered
+
+    def list_professors(self):
+        return self.faculty_members
+
+# Example Usage:
+department1 = Department(1, "Computer Science", "Dr. Johnson", ["CS101", "CS102"], ["Dr. Smith", "Dr. Brown"])
+print(department1.get_department_info())
+print("Courses Offered:", department1.list_courses())
+print("Faculty Members:", department1.list_professors())
+
+
+class Schedule:
+    def __init__(self, schedule_id, course, professor, time_slot, location):
+        self.schedule_id = schedule_id
+        self.course = course
+        self.professor = professor
+        self.time_slot = time_slot
+        self.location = location
+
+    def assign_schedule(self, schedule_id, course, professor, time_slot, location):
+        self.schedule_id = schedule_id
+        self.course = course
+        self.professor = professor
+        self.time_slot = time_slot
+        self.location = location
+        print("Schedule assigned successfully.")
+
+    def update_schedule(self, schedule_id=None, course=None, professor=None, time_slot=None, location=None):
+        if schedule_id:
+            self.schedule_id = schedule_id
+        if course:
+            self.course = course
+        if professor:
+            self.professor = professor
+        if time_slot:
+            self.time_slot = time_slot
+        if location:
+            self.location = location
+        print("Schedule updated successfully.")
+
+    def view_schedule(self):
+        return {
+            "Schedule ID": self.schedule_id,
+            "Course": self.course,
+            "Professor": self.professor,
+            "Time Slot": self.time_slot,
+            "Location": self.location
+        }
+
+
+schedule1 = Schedule(101, "Math 101", "Dr. Smith", "10:00 AM - 11:00 AM", "Room 202")
+print(schedule1.view_schedule())
+
+schedule1.update_schedule(time_slot="11:00 AM - 12:00 PM")
+print(schedule1.view_schedule())
+
 # aya:
 
 class Admin:    
