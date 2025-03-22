@@ -295,5 +295,49 @@ prof1.assign_grades("kim","math",56)
 prof1.view_students()
 
 
+class course:
+    def __init__(self ,course_name,course_id,department,credits,professor):
+      self.course_name=course_name
+      self.course_id=course_id
+      self.department=department
+      self.credits=credits
+      self.professor=professor
+      self.enrolled_students={}
+      
+      
+      
+    def add_students(self,student_name):
+        if student_name not in self.enrolled_students:
+          self.enrolled_students[student_name]={}
+          print(f"{student_name}has enrolled in  {self.course_name} course")
+        else:
+            print(f"{student_name}is already enrolled in this course")
+            
+            
+            
+    def remove_course(self, student_name):
+       if student_name in self.enrolled_students:
+          del enrolled_students[student_name]
+          print(f"{student_name},is removed from{self.course_name},course")
+       else:
+              print(f"{student_name}is already not enrolled in this course")
+              
+              
+              
+    def get_course_info(self):
+         print(f"course_name:{ self.course_name},course_id:{self.course_id},department:{self.department},credits:{self.credits},course_professor:{self.professor}")
+    
+    
+    
+    
+cou1=course("advanced","csc1022","programming",4453,"ahmad")
+cou1.add_students("jana")
+cou1.add_students("ammar")
+cou1.add_students("jissi")
+cou1. remove_course("ghadeeer")
+cou1. remove_course("emi")
+cou1. get_course_info()       
+   
+            
 
 
