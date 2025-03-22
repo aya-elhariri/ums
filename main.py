@@ -116,7 +116,109 @@ ex.display_student_results()
 ex.view_exam_info()
 
  
-# adham:
+# adham: 
+# Encapsulation: Classroom class
+class Classroom:
+    def __init__(self, classroom_id, location, capacity):
+        self.classroom_id = classroom_id
+        self.location = location
+        self.capacity = capacity
+        self.schedule = {}  # Dictionary to store schedule (key: time_slot, value: course_name)
+
+    def allocate_class(self, course_name, time_slot, num_students):
+        if time_slot not in self.schedule:
+            if num_students <= self.capacity:
+                self.schedule[time_slot] = course_name
+                print(f"Classroom {self.classroom_id} allocated for {course_name} at {time_slot}.")
+            else:
+                print(f"Classroom {self.classroom_id} cannot accommodate {course_name} (capacity exceeded).")
+        else:
+            print(f"Classroom {self.classroom_id} is already booked at {time_slot}.")
+
+    def check_availability(self, time_slot):
+        if time_slot not in self.schedule:
+            return "Available"
+        return "Booked"
+
+    def get_classroom_info(self):
+        return f"Classroom ID: {self.classroom_id}, Location: {self.location}, Capacity: {self.capacity}"
+
+    def __str__(self):  # Overriding (string representation)
+        return self.get_classroom_info()
+
+
+# Encapsulation: Library class
+class Library:
+    def __init__(self, library_id):
+        self.library_id = library_id
+        self.books = {}  # Dictionary to store books (key: book_id, value: book_name)
+        self.students_registered = set()  # Set to store registered student names
+
+    def add_book(self, book_id, book_name):
+        self.books[book_id] = book_name
+        print(f"Book '{book_name}' added to the library.")
+
+    def register_student(self, student_name):
+        self.students_registered.add(student_name)
+        print(f"Student {student_name} registered with the library.")
+
+    def borrow_book(self, student_name, book_id):
+        if student_name in self.students_registered:
+            if book_id in self.books:
+                print(f"Student {student_name} borrowed '{self.books[book_id]}'.")
+            else:
+                print(f"Book with ID {book_id} not found.")
+        else:
+            print(f"Student {student_name} is not registered with the library.")
+
+    def return_book(self, student_name, book_id):
+        if student_name in self.students_registered:
+            if book_id in self.books:
+                print(f"Student {student_name} returned '{self.books[book_id]}'.")
+            else:
+                print(f"Book with ID {book_id} not found.")
+        else:
+            print(f"Student {student_name} is not registered with the library.")
+
+    def get_library_info(self):
+        return f"Library ID: {self.library_id}, Total Books: {len(self.books)}"
+
+    def __str__(self):  # Overriding (string representation)
+        return self.get_library_info()
+
+
+# Create a classroom
+classroom_101 = Classroom("101", "Building A, Room 101", 50)
+
+# Allocate classroom for a course
+classroom_101.allocate_class("Introduction to Programming", "Monday 10:00 AM - 12:00 PM", 40)
+
+# Check classroom availability
+print("Classroom availability at Monday 10:00 AM - 12:00 PM:", classroom_101.check_availability("Monday 10:00 AM - 12:00 PM"))
+
+# Print classroom info
+print(classroom_101)
+
+# Create a library
+main_library = Library("L001")
+
+# Add books to the library
+main_library.add_book("B001", "Python Programming")
+main_library.add_book("B002", "Data Structures and Algorithms")
+
+# Register a student with the library
+main_library.register_student("John Doe")
+
+# Borrow a book
+main_library.borrow_book("John Doe", "B001")
+
+# Return a book
+main_library.return_book("John Doe", "B001")
+
+# Print library info
+print(main_library)
+
+
 # arwa:
 class Department:
     def __init__(self, department_id, name, head_of_department, courses_offered, faculty_members):
