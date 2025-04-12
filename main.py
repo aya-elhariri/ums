@@ -1,7 +1,8 @@
 # mohmmed: 
 from datetime import date 
 class student:
-
+    
+    ##remove this from here and handle but in other way
     available_courses = ["Advanced programming" , "fundementals of programming" , "physics 112" , "Math 111" , "DLD"]
 
     def __init__(self, student_name , student_id , major , email ):
@@ -14,7 +15,7 @@ class student:
 
 
     def enroll_course(self , course):
-        
+        ##handle if the student already enrolled or not
         if course in self.available_courses:
             self.courses_enrolled.append(course)
             print (f"{self.student_name} has enrolled in {course}")
@@ -80,6 +81,8 @@ class Exam:
     def record_result(self , score , student_name):
         self.student_results[student_name] = score
         print(f"{student_name}' results have been saved as {score}")
+
+    ## handle the grades attribute of Student and Professor classes
        
 
     def display_student_results(self):
@@ -125,6 +128,7 @@ class Classroom:
         self.capacity = capacity
         self.schedule = {}  # Dictionary to store schedule (key: time_slot, value: course_name)
 
+     ## use check avilabilty here for code reusability
     def allocate_class(self, course_name, time_slot, num_students):
         if time_slot not in self.schedule:
             if num_students <= self.capacity:
@@ -158,10 +162,12 @@ class Library:
         self.books[book_id] = book_name
         print(f"Book '{book_name}' added to the library.")
 
+    ## can be handeled by another way?
     def register_student(self, student_name):
         self.students_registered.add(student_name)
         print(f"Student {student_name} registered with the library.")
 
+    ## we need dictionry to contain data about the students and borrowed books
     def borrow_book(self, student_name, book_id):
         if student_name in self.students_registered:
             if book_id in self.books:
@@ -221,6 +227,7 @@ print(main_library)
 
 # arwa:
 class Department:
+    ## blash courses_offered w faculty_members 3n taree2 el constructor
     def __init__(self, department_id, name, head_of_department, courses_offered, faculty_members):
         self.department_id = department_id
         self.name = name
@@ -238,9 +245,11 @@ class Department:
         }
 
     def list_courses(self):
+        ## assigning the value of courses and handel adding new courses
         return self.courses_offered
 
     def list_professors(self):
+        ## assigning the value of proffesors and handel adding new proffeseors
         return self.faculty_members
 
 # Example Usage:
@@ -259,6 +268,7 @@ class Schedule:
         self.location = location
 
     def assign_schedule(self, schedule_id, course, professor, time_slot, location):
+        ## give it another function (as it does the same as constructor)
         self.schedule_id = schedule_id
         self.course = course
         self.professor = professor
@@ -298,31 +308,55 @@ print(schedule1.view_schedule())
 # aya:
 
 class Admin:    
-    student_course_dict = {}
+    
     def __init__(self, admin_id, name, role, contact_info):
         self.admin_id = admin_id
         self.name = name
         self.role = role
         self.contact_info = contact_info
 
-    def add_student(self, course, student):
-        if course not in Admin.student_course_dict:
-            Admin.student_course_dict[course] = []  
-        Admin.student_course_dict[course].append(student)
+    def add_student(self, course, student): 
+        if course not in student.courses_enrolled and student not in course.enrlled_students:
+            student.courses_enrolled.append(course)
+            course.enrolled_students.append(student)
+            print("student added sucessfully")
+        else:
+            print("ERROR, failed to add student, student may be already enrolled")
+
 
     def remove_student(self, course, student):
-        if course in Admin.student_course_dict:
-            if student in Admin.student_course_dict[course]:
-                Admin.student_course_dict[course].remove(student)
+        if course not in student.courses_enrolled and student not in course.enrlled_students:
+            student.courses_enrolled.remove(course)
+            course.enrlled_students.remove(student)
+        else:
+            print("ERROR, failed to remove student, student may be NOT enrolled")
+
+
 
     def assign_professor(self, course, professor):
-        #lma n3ml class el course
-        pass
+        ## check lw el prof. ynf3 ydi elmada de asln wla laa
+        if course not in professor.courses_taught:
+            professor.courses_taught.append(course)
+            course.professor = professor
+            print("prof. {professor.name} is assigned to course: {course.code}")
 
-    #msh fahma 3aiez eih
-    def manage_course(self):
-        pass
 
+    def manage_course(self, operation, course, department):
+        ## create course object eih raykom??
+        if operation.lower == "add":
+            if course not in department.courses_offered:
+                department.courses_offered.append(course)
+                print("course {course} added sucessfuly to department of {department}")
+            else:
+                print("CAN NOT BE ADDED. course already exists")
+        if operation.lower == "remove":
+            if course in department.courses_offered:
+                department.courses_offered.remove(course)
+                print("course {course} removed sucessfuly from department of {department}")
+            else:
+                print("ERROR course doesn't exists")
+
+   
 
 
 class User:
@@ -364,6 +398,7 @@ class professor:
         
         
     def assign_grades(self,student_name,course,grade):
+        ## could we handle grade range  
         if 0<=grade<=100:
           if student_name not in self.grades:
               self.grades[student_name] = {}  
@@ -404,7 +439,7 @@ class course:
       self.department=department
       self.credits=credits
       self.professor=professor
-      self.enrolled_students={}
+      self.enrolled_students={} ## a3taked list of objects a7san
       
       
       
