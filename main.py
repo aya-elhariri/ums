@@ -103,30 +103,14 @@ class Exam:
             print("exam has no scheduled date yet")
         print("*******************************************************************")
 
-
-################################################################################################################################
-std = student("mohamed" , 124234 , "Cns" , "user@gmail.com" )
-std.enroll_course("physics 112")
-std.enroll_course("DLD")
-std.enroll_course("chemistry")
-std.get_info()
-
-
-ex = Exam(1423 , "Advanced programming" , None , None , None )
-ex.schedule_exam(2024,5,26)
-ex.record_result("57/60" , "Mohamed")
-ex.display_student_results()
-ex.view_exam_info()
-
  
 # adham: 
-# Encapsulation: Classroom class
 class Classroom:
     def __init__(self, classroom_id, location, capacity):
         self.classroom_id = classroom_id
         self.location = location
         self.capacity = capacity
-        self.schedule = {}  # Dictionary to store schedule (key: time_slot, value: course_name)
+        self.schedule = {}  
 
      ## use check avilabilty here for code reusability
     def allocate_class(self, course_name, time_slot, num_students):
@@ -147,15 +131,16 @@ class Classroom:
     def get_classroom_info(self):
         return f"Classroom ID: {self.classroom_id}, Location: {self.location}, Capacity: {self.capacity}"
 
-    def __str__(self):  # Overriding (string representation)
+    def __str__(self):  
         return self.get_classroom_info()
 
 
-# Encapsulation: Library class
+
 class Library:
     def __init__(self, library_id):
         self.library_id = library_id
         self.books = {}  # Dictionary to store books (key: book_id, value: book_name)
+        ## self.students_registered = set() ?????????????? 
         self.students_registered = set()  # Set to store registered student names
 
     def add_book(self, book_id, book_name):
@@ -193,47 +178,14 @@ class Library:
         return self.get_library_info()
 
 
-# Create a classroom
-classroom_101 = Classroom("101", "Building A, Room 101", 50)
-
-# Allocate classroom for a course
-classroom_101.allocate_class("Introduction to Programming", "Monday 10:00 AM - 12:00 PM", 40)
-
-# Check classroom availability
-print("Classroom availability at Monday 10:00 AM - 12:00 PM:", classroom_101.check_availability("Monday 10:00 AM - 12:00 PM"))
-
-# Print classroom info
-print(classroom_101)
-
-# Create a library
-main_library = Library("L001")
-
-# Add books to the library
-main_library.add_book("B001", "Python Programming")
-main_library.add_book("B002", "Data Structures and Algorithms")
-
-# Register a student with the library
-main_library.register_student("John Doe")
-
-# Borrow a book
-main_library.borrow_book("John Doe", "B001")
-
-# Return a book
-main_library.return_book("John Doe", "B001")
-
-# Print library info
-print(main_library)
-
-
 # arwa:
 class Department:
-    ## blash courses_offered w faculty_members 3n taree2 el constructor
-    def __init__(self, department_id, name, head_of_department, courses_offered, faculty_members):
+    def __init__(self, department_id, name, head_of_department):
         self.department_id = department_id
         self.name = name
         self.head_of_department = head_of_department
-        self.courses_offered = courses_offered  # List of courses
-        self.faculty_members = faculty_members  # List of professors
+        self.courses_offered = []
+        self.faculty_members = []
 
     def get_department_info(self):
         return {
@@ -244,19 +196,13 @@ class Department:
             "Faculty Members": self.faculty_members
         }
 
-    def list_courses(self):
-        ## assigning the value of courses and handel adding new courses
+    def list_courses(self, courses):
+        self.courses_offered = courses
         return self.courses_offered
 
-    def list_professors(self):
-        ## assigning the value of proffesors and handel adding new proffeseors
+    def list_professors(self, professors):
+        self.faculty_members = professors
         return self.faculty_members
-
-# Example Usage:
-department1 = Department(1, "Computer Science", "Dr. Johnson", ["CS101", "CS102"], ["Dr. Smith", "Dr. Brown"])
-print(department1.get_department_info())
-print("Courses Offered:", department1.list_courses())
-print("Faculty Members:", department1.list_professors())
 
 
 class Schedule:
@@ -299,12 +245,6 @@ class Schedule:
         }
 
 
-schedule1 = Schedule(101, "Math 101", "Dr. Smith", "10:00 AM - 11:00 AM", "Room 202")
-print(schedule1.view_schedule())
-
-schedule1.update_schedule(time_slot="11:00 AM - 12:00 PM")
-print(schedule1.view_schedule())
-
 # aya:
 
 class Admin:    
@@ -316,7 +256,7 @@ class Admin:
         self.contact_info = contact_info
 
     def add_student(self, course, student): 
-        if course not in student.courses_enrolled and student not in course.enrlled_students:
+        if course not in student.courses_enrolled and student not in course.enrolled_students:
             student.courses_enrolled.append(course)
             course.enrolled_students.append(student)
             print("student added sucessfully")
@@ -325,9 +265,9 @@ class Admin:
 
 
     def remove_student(self, course, student):
-        if course not in student.courses_enrolled and student not in course.enrlled_students:
+        if course in student.courses_enrolled and student in course.enrolled_students:
             student.courses_enrolled.remove(course)
-            course.enrlled_students.remove(student)
+            course.enrolled_students.remove(student)
         else:
             print("ERROR, failed to remove student, student may be NOT enrolled")
 
@@ -338,7 +278,7 @@ class Admin:
         if course not in professor.courses_taught:
             professor.courses_taught.append(course)
             course.professor = professor
-            print("prof. {professor.name} is assigned to course: {course.code}")
+            print(f"prof. {professor.name} is assigned to course: {course.course_id}")
 
 
     def manage_course(self, operation, course, department):
@@ -346,10 +286,10 @@ class Admin:
         if operation.lower == "add":
             if course not in department.courses_offered:
                 department.courses_offered.append(course)
-                print("course {course} added sucessfuly to department of {department}")
+                print(f"course {course} added sucessfuly to department of {department}")
             else:
                 print("CAN NOT BE ADDED. course already exists")
-        if operation.lower == "remove":
+        if operation.lower() == "remove":
             if course in department.courses_offered:
                 department.courses_offered.remove(course)
                 print("course {course} removed sucessfuly from department of {department}")
@@ -371,6 +311,7 @@ class User:
 
     def login(self, email, password):
         if email == self.email and password == self.__password:
+            self.logged_in = True
             print("logged in sucessfully")
             #3aizen n3ml option eno y create account
         else:
@@ -382,7 +323,7 @@ class User:
 
     def view_dashboard(self):
         print(f"Dashboard of : {self.name}")
-        print(f"user data: /n Name: {self.name} /n role: {self.role} /n Id: {self.user_id} /n Email: {self.email}")
+        print(f"user data: \n Name: {self.name} \n role: {self.role} \n Id: {self.user_id} \n Email: {self.email}")
 
 
 # habiba:
@@ -397,9 +338,8 @@ class professor:
         self.grades ={}
         
         
-    def assign_grades(self,student_name,course,grade):
-        ## could we handle grade range  
-        if 0<=grade<=100:
+    def assign_grades(self,student_name,course,grade, max_grade):
+        if 0 <= grade <= max_grade:
           if student_name not in self.grades:
               self.grades[student_name] = {}  
               self.grades[student_name][course] = grade 
@@ -425,11 +365,6 @@ class professor:
         
         
         
-prof1=professor("dr.john","p799776","john@gmail.com","computer science")
-prof1.assign_grades("ahmad","math",78)
-prof1.assign_grades("ghadeer","german",88)
-prof1.assign_grades("kim","math",56)
-prof1.view_students()
 
 
 class course:
@@ -439,13 +374,13 @@ class course:
       self.department=department
       self.credits=credits
       self.professor=professor
-      self.enrolled_students={} ## a3taked list of objects a7san
+      self.enrolled_students=[]
       
       
       
     def add_students(self,student_name):
         if student_name not in self.enrolled_students:
-          self.enrolled_students[student_name]={}
+          self.enrolled_students.append(student_name)
           print(f"{student_name}has enrolled in  {self.course_name} course")
         else:
             print(f"{student_name}is already enrolled in this course")
@@ -454,7 +389,7 @@ class course:
             
     def remove_course(self, student_name):
        if student_name in self.enrolled_students:
-          del enrolled_students[student_name]
+          self.enrolled_students.remove(student_name)
           print(f"{student_name},is removed from{self.course_name},course")
        else:
               print(f"{student_name}is already not enrolled in this course")
@@ -465,8 +400,49 @@ class course:
          print(f"course_name:{ self.course_name},course_id:{self.course_id},department:{self.department},credits:{self.credits},course_professor:{self.professor}")
     
     
-    
-    
+################################################################################################################################
+std = student("mohamed" , 124234 , "Cns" , "user@gmail.com" )
+std.enroll_course("physics 112")
+std.enroll_course("DLD")
+std.enroll_course("chemistry")
+std.get_info()
+
+
+ex = Exam(1423 , "Advanced programming" , None , None , None )
+ex.schedule_exam(2024,5,26)
+ex.record_result("57/60" , "Mohamed")
+ex.display_student_results()
+ex.view_exam_info()
+################################################################################################################################
+
+classroom_101 = Classroom("101", "Building A, Room 101", 50)
+classroom_101.allocate_class("Introduction to Programming", "Monday 10:00 AM - 12:00 PM", 40)
+print("Classroom availability at Monday 10:00 AM - 12:00 PM:", classroom_101.check_availability("Monday 10:00 AM - 12:00 PM"))
+print(classroom_101)
+main_library = Library("L001")
+main_library.add_book("B001", "Python Programming")
+main_library.add_book("B002", "Data Structures and Algorithms")
+main_library.register_student("John Doe")
+main_library.borrow_book("John Doe", "B001")
+main_library.return_book("John Doe", "B001")
+print(main_library)
+################################################################################################################################
+
+
+department1 = Department(1, "Computer Science", "Dr. Johnson")
+print(department1.get_department_info())
+print("Courses Offered:", department1.list_courses(["CS101", "CS102"]))
+print("Faculty Members:", department1.list_professors(["Dr. Smith", "Dr. Brown"]))
+
+schedule1 = Schedule(101, "Math 101", "Dr. Smith", "10:00 AM - 11:00 AM", "Room 202")
+print(schedule1.view_schedule())
+schedule1.update_schedule(time_slot="11:00 AM - 12:00 PM")
+print(schedule1.view_schedule())
+
+
+################################################################################################################################
+
+
 cou1=course("advanced","csc1022","programming",4453,"ahmad")
 cou1.add_students("jana")
 cou1.add_students("ammar")
@@ -475,6 +451,23 @@ cou1. remove_course("ghadeeer")
 cou1. remove_course("emi")
 cou1. get_course_info()       
    
-            
+prof1=professor("dr.john","p799776","john@gmail.com","computer science")
+prof1.assign_grades("ahmad","math",78,90)
+prof1.assign_grades("ghadeer","german",88,90)
+prof1.assign_grades("kim","math",56,90)
+prof1.view_students()            
 
 
+################################################################################################################################
+
+admn301 = Admin(301,"Ahmed", "student Affairs", "admin301@gmail.com")
+admn301.add_student(cou1,std)
+admn301.remove_student(cou1,std)
+admn301.assign_professor(cou1,prof1)
+admn301.manage_course("add", cou1, department1)
+
+user5871 = User(5871, "Mohamed", "Student", "mohamed@example.com", "12345")
+user5871.view_dashboard()
+user5871.login(email="mohamed@example.com", password="12345")
+user5871.view_dashboard()
+user5871.logout()
