@@ -15,7 +15,10 @@ class student:
 
 
     def enroll_course(self , course):
-        ##handle if the student already enrolled or not
+        ##handle if the student already enrolled or not   -------> done 
+        if course in self.courses_enrolled:
+            print(f"{self.student_name} is already enrolled in {course}")
+            return
         if course in self.available_courses:
             self.courses_enrolled.append(course)
             print (f"{self.student_name} has enrolled in {course}")
@@ -36,10 +39,6 @@ class student:
 
         else:
             print("this course does not exist")
-
-
-    def assign_grades(self):
-        pass
 
 
     def view_grades(self):
