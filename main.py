@@ -140,22 +140,23 @@ class Library:
     def __init__(self, library_id):
         self.library_id = library_id
         self.books = {}  # Dictionary to store books (key: book_id, value: book_name)
-        ## self.students_registered = set() ?????????????? 
-        self.students_registered = set()  # Set to store registered student names
+        self.students_registered = []  
+        self.borrowed_book={}
 
     def add_book(self, book_id, book_name):
         self.books[book_id] = book_name
         print(f"Book '{book_name}' added to the library.")
 
-    ## can be handeled by another way?
+  
     def register_student(self, student_name):
-        self.students_registered.add(student_name)
+        self.students_registered.append(student_name)
         print(f"Student {student_name} registered with the library.")
 
-    ## we need dictionry to contain data about the students and borrowed books
+    
     def borrow_book(self, student_name, book_id):
         if student_name in self.students_registered:
             if book_id in self.books:
+                self.borrowed_book[student_name]=[book_id]
                 print(f"Student {student_name} borrowed '{self.books[book_id]}'.")
             else:
                 print(f"Book with ID {book_id} not found.")
@@ -163,19 +164,21 @@ class Library:
             print(f"Student {student_name} is not registered with the library.")
 
     def return_book(self, student_name, book_id):
-        if student_name in self.students_registered:
-            if book_id in self.books:
+        if student_name in self.borrowed_book:
+                if book_id in self.borrowed_book[student_name]:
+                    self.borrowed_book[student_name].remove(book_id)
+                    if len (book_id)==0:
+                        del self.borrowed_book[student_name]
                 print(f"Student {student_name} returned '{self.books[book_id]}'.")
-            else:
-                print(f"Book with ID {book_id} not found.")
-        else:
-            print(f"Student {student_name} is not registered with the library.")
+            
 
     def get_library_info(self):
         return f"Library ID: {self.library_id}, Total Books: {len(self.books)}"
 
-    def __str__(self):  # Overriding (string representation)
+    def __str__(self):  
         return self.get_library_info()
+
+
 
 
 # arwa:
