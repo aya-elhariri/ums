@@ -5,13 +5,30 @@ class student:
     ##remove this from here and handle but in other way
     available_courses = ["Advanced programming" , "fundementals of programming" , "physics 112" , "Math 111" , "DLD"]
 
+    In_Use_IDs = set()
     def __init__(self, student_name , student_id , major , email ):
+
+        if not isinstance(student_name , str) or not student_name:
+            raise ValueError("name must be a string and cannot be empty space!")
+        
+        if '@' not in email or '.' not in email:
+            raise ValueError("email must follow this format -->  'user@example.com'")
+        
+        if not isinstance(student_id , int) or not (100000 <= student_id <= 999999):
+            raise ValueError("ID must be an integer and must be 6 digits long")
+        
+        if student_id in student.In_Use_IDs:
+            raise ValueError("ID is already in use. please enter a different ID")
+        student.In_Use_IDs.add(student_id)
+        
+
         self.student_name = student_name
         self.student_id = student_id
         self.major = major
         self.email = email
         self.courses_enrolled = []
         self.grades = {}
+        
 
 
     def enroll_course(self , course):
