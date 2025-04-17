@@ -36,6 +36,8 @@ class student:
 
     def enroll_course(self , course):
         ##handle if the student already enrolled or not   -------> done 
+        if not course:
+            raise ValueError("You may have accidentally entered an empty space")
         if course in self.courses_enrolled:
             print(f"{self.student_name} is already enrolled in {course}")
             return
@@ -48,6 +50,9 @@ class student:
 
 
     def drop_course(self , course):
+        if not course:
+            raise ValueError("You may have accidentally entered an empty space")
+        
         if course in self.available_courses:
 
             if course in self.courses_enrolled:
