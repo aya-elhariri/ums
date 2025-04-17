@@ -11,6 +11,9 @@ class student:
         if not isinstance(student_name , str) or not student_name:
             raise ValueError("name must be a string and cannot be empty space!")
         
+        if not isinstance(email , str) or not email:
+            raise ValueError("email must be a string and cannot be empty space!")
+        
         if '@' not in email or '.' not in email:
             raise ValueError("email must follow this format -->  'user@example.com'")
         
