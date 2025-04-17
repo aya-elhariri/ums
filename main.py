@@ -304,12 +304,12 @@ class Admin:
 
 class User:
     # eldoctor mkansh kateb password bs m7tagenha fe el login
-    def __init__(self, user_id, name, role, email, __password):
+    def __init__(self, user_id, name, role, email, password):
         self.user_id = user_id
         self.name = name
         self.role = role
         self.email = email
-        self.__password = __password
+        self.__password = password
         self.logged_in = False
 
     def login(self, email, password):
