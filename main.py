@@ -329,24 +329,61 @@ class Admin:
 class User:
     # eldoctor mkansh kateb password bs m7tagenha fe el login
     def __init__(self, user_id, name, role, email, password):
-        self.user_id = user_id
-        self.name = name
-        self.role = role
-        self.email = email
-        self.__password = password
-        self.logged_in = False
 
-    def login(self, email, password):
-        if email == self.email and password == self.__password:
-            self.logged_in = True
-            print("logged in sucessfully")
-            #3aizen n3ml option eno y create account
-        else:
-            print("invalid email or password")
+
+        try:
+            if not isinstance(user_id, int):
+                    raise TypeError("user_id must be an integer")
+            if not isinstance(name, str) or not name:
+                raise ValueError("name must be a non-empty string")
+            if not isinstance(role, str) or not role:
+                raise ValueError("role must be a non-empty string")
+            if not isinstance(email, str) or '@' not in email:
+                raise ValueError("email must be a valid email address")
+            if not isinstance(password, str) or len(password) < 6:
+                raise ValueError("password must be a string with at least 6 characters")
+            self.user_id = user_id
+            self.name = name
+            self.role = role
+            self.email = email
+            self.__password = password
+            self.logged_in = False
+        except (TypeError, ValueError) as e:
+            print(f"can't initialize User: {e}")
+        
+
+    def login(self):
+        try:
+            email = input("Enter your email: ")
+            password = input("Enter your password: ")
+
+            while not email or not password:
+                print("Email and password cannot be empty.")
+                email = input("Enter your email: ")
+                password = input("Enter your password: ")
+
+            while email != self.email or password != self.__password:
+                print("Invalid email or password.")
+                email = input("Enter your email: ")
+                password = input("Enter your password: ")
+
+            if self.logged_in:
+                print("You are already logged in.")
+
+            else:
+                self.logged_in = True
+                print("Logged in successfully.")
+
+        except Exception as e:
+            print(f"Something went wrong: {e}")
 
     def logout(self):
-        self.logged_in = False
-        print("loged out sucessfully")
+        if self.logged_in:
+            self.logged_in = False
+            print("loged out sucessfully")
+        else:
+            print("you are already logged out")
+
 
     def view_dashboard(self):
         print(f"Dashboard of : {self.name}")
@@ -368,6 +405,7 @@ class professor:
     def assign_grades(self,student_name,course,grade, max_grade):
         if 0 <= grade <= max_grade:
           if student_name not in self.grades:
+              student_name.grades[course] = grade
               self.grades[student_name] = {}  
               self.grades[student_name][course] = grade 
               print(f"student name is:,{student_name},course:,{course},the grade assigned:,{grade}")
