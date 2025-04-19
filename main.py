@@ -277,40 +277,92 @@ class Schedule:
 class Admin:    
     
     def __init__(self, admin_id, name, role, contact_info):
-        self.admin_id = admin_id
-        self.name = name
-        self.role = role
-        self.contact_info = contact_info
+        try:
+            if not all([admin_id, name, role, contact_info]):
+                raise ValueError("All admin fields (ID, name, role, contact_info) must be provided.")
+            if not isinstance(admin_id, str):
+                raise TypeError("Admin ID must be a string.")
+            if not isinstance(name, str):
+                raise TypeError("Name must be a string.")
+            if not isinstance(role, str):
+                raise TypeError("Role must be a string.")
+            if not isinstance(contact_info, (str, dict)):  
+                raise TypeError("Contact info must be a string or a dictionary.")
 
-    def add_student(self, course, student): 
-        if course not in student.courses_enrolled and student not in course.enrolled_students:
-            student.courses_enrolled.append(course)
-            course.enrolled_students.append(student)
-            print("student added sucessfully")
+            self.admin_id = admin_id
+            self.name = name
+            self.role = role
+            self.contact_info = contact_info
+
+        except(ValueError, TypeError) as e:
+            print(f"Error creating Admin: {e}")
+
+    def add_student(self, student_name , student_id , major , email): 
+        if not all([student_name, student_id, major, email]):
+            print("ERROR: All student fields must be provided.")
+            return
+        if student_id in student.In_Use_IDs:
+            print("STUDENT Already Exists!")
         else:
-            print("ERROR, failed to add student, student may be already enrolled")
+            try:
+                new_student = student(student_name, student_id, major, email)
+                student.In_Use_IDs.add(new_student.student_id)
+                print(f"Student {new_student.name} added successfully.")
+            except Exception as e:
+                print(f"ERROR: Failed to create student. Reason: {e}")
+            # lma n3ml db h3ml feature ennha t add llel db
 
 
-    def remove_student(self, course, student):
-        if course in student.courses_enrolled and student in course.enrolled_students:
-            student.courses_enrolled.remove(course)
-            course.enrolled_students.remove(student)
-        else:
-            print("ERROR, failed to remove student, student may be NOT enrolled")
+    def remove_student(self, student_id):
+        if not student_id:
+            print("ERROR: Student ID is required.")
+            return
+
+        try:
+            if student_id not in student.In_Use_IDs:
+                print("Student Does Not Exist!")
+                return
+            student.In_Use_IDs.remove(student_id)
+        except Exception as e:
+            print(f"Something went wrong: {e}")
 
 
 
     def assign_professor(self, course, professor):
         ## check lw el prof. ynf3 ydi elmada de asln wla laa
-        if course not in professor.courses_taught:
+        if not course or not professor:
+            print("ERROR: Course and Professor must be provided.")
+            return
+        try:
+            if not hasattr(professor, 'courses_taught') or not isinstance(professor.courses_taught, list):
+                raise AttributeError("Professor object is missing 'courses_taught' list.")
+            
+            if hasattr(course, 'professor') and course.professor:
+                print(f"ERROR: Course {course.course_id} already has a professor assigned: {course.professor.name}")
+                return
+
+            if course in professor.courses_taught:
+                print(f"Professor {professor.name} already teaches this course.")
+                return
+            
             professor.courses_taught.append(course)
             course.professor = professor
             print(f"prof. {professor.name} is assigned to course: {course.course_id}")
 
+        except Exception as e:
+            print(f"Something went wrong: {e}")
 
     def manage_course(self, operation, course, department):
-        ## create course object eih raykom??
-        if operation.lower == "add":
+        
+        #course_name,course_id,department,credits,professor
+        # if operation.lower() == "create":
+        #     course_name = input("course name : ")
+        #     course_id = input("course id : ")
+        #     department = input("department : ")
+        #     credits = input("credit hours: ")
+        #     professor = input("professor: ")
+
+        if operation.lower() == "add":
             if course not in department.courses_offered:
                 department.courses_offered.append(course)
                 print(f"course {course} added sucessfuly to department of {department}")
@@ -319,10 +371,11 @@ class Admin:
         if operation.lower() == "remove":
             if course in department.courses_offered:
                 department.courses_offered.remove(course)
-                print("course {course} removed sucessfuly from department of {department}")
+                print(f"course {course} removed sucessfuly from department of {department}")
             else:
                 print("ERROR course doesn't exists")
 
+   
    
 
 
