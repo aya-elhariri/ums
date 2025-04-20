@@ -131,77 +131,217 @@ class Exam:
 # adham: 
 class Classroom:
     def __init__(self, classroom_id, location, capacity):
-        self.classroom_id = classroom_id
-        self.location = location
-        self.capacity = capacity
-        self.schedule = {}  
+        try:
+            
+            if not isinstance(classroom_id, str) or not classroom_id:
+                raise ValueError("Classroom ID must be a non-empty string")
+            
+            
+            if not isinstance(location, str) or not location:
+                raise ValueError("Location must be a non-empty string")
+            
+            capacity = int(capacity)
+            if capacity <= 0:
+                raise ValueError("Capacity must be a positive integer")
+            
+            self.classroom_id = classroom_id.strip()
+            self.location = location.strip()
+            self.capacity = capacity
+            self.schedule = {}
+            
+        except ValueError as e:
+            print(f"Error creating Classroom: {e}")
+            
 
-     ## use check avilabilty here for code reusability
     def allocate_class(self, course_name, time_slot, num_students):
-        if time_slot not in self.schedule:
-            if num_students <= self.capacity:
-                self.schedule[time_slot] = course_name
-                print(f"Classroom {self.classroom_id} allocated for {course_name} at {time_slot}.")
-            else:
-                print(f"Classroom {self.classroom_id} cannot accommodate {course_name} (capacity exceeded).")
-        else:
-            print(f"Classroom {self.classroom_id} is already booked at {time_slot}.")
+        try:
+            
+            if not isinstance(course_name, str) or not course_name:
+                raise ValueError("Course name must be a non-empty string")
+            
+            
+            if not isinstance(time_slot, str) or not time_slot:
+                raise ValueError("Time slot must be a non-empty string")
+            
+            
+            if not isinstance(num_students, int) or num_students <= 0:
+                raise ValueError("Number of students must be a positive integer")
+            
+            
+            if not self.check_availability(time_slot):
+                raise ValueError(f"Classroom {self.classroom_id} is already booked at {time_slot}")
+            
+            
+            if num_students > self.capacity:
+                raise ValueError(
+                    f"Classroom capacity exceeded (Capacity: {self.capacity}, "
+                    f"Requested: {num_students})"
+                )
+            
+            
+            self.schedule[time_slot] = course_name
+            print(f"Classroom {self.classroom_id} allocated for {course_name} at {time_slot}.")
+            
+        except ValueError as e:
+            print(f"Allocation failed: {e}")
 
     def check_availability(self, time_slot):
-        if time_slot not in self.schedule:
-            return "Available"
-        return "Booked"
+        try:
+            if not isinstance(time_slot, str) or not time_slot:
+                raise ValueError("Time slot must be a non-empty string")
+            
+            return time_slot not in self.schedule
+            
+        except ValueError as e:
+            print(f"Availability check failed: {e}")
+             
 
     def get_classroom_info(self):
-        return f"Classroom ID: {self.classroom_id}, Location: {self.location}, Capacity: {self.capacity}"
+        return (
+            f"Classroom ID: {self.classroom_id}, "
+            f"Location: {self.location}, "
+            f"Capacity: {self.capacity}"
+        )
 
-    def __str__(self):  
+    def __str__(self):
         return self.get_classroom_info()
-
 
 
 class Library:
     def __init__(self, library_id):
-        self.library_id = library_id
-        self.books = {}  # Dictionary to store books (key: book_id, value: book_name)
-        self.students_registered = []  
-        self.borrowed_book={}
+        
+        try:
+            if not isinstance(library_id, str) or not library_id:
+                raise ValueError("Library ID must be a non-empty string")
+            
+            self.library_id = library_id.strip()
+            self.books = {} 
+            self.students_registered = set()  
+            self.borrowed_books = {}  # {student_name: [book_id1, book_id2]}
+            
+        except ValueError as e:
+            print(f"Error creating Library: {str(e)}")
+            raise
 
     def add_book(self, book_id, book_name):
-        self.books[book_id] = book_name
-        print(f"Book '{book_name}' added to the library.")
-
-  
-    def register_student(self, student_name):
-        self.students_registered.append(student_name)
-        print(f"Student {student_name} registered with the library.")
-
-    
-    def borrow_book(self, student_name, book_id):
-        if student_name in self.students_registered:
+        
+        try:
+     
+            if not isinstance(book_id, str) or not book_id.strip():
+                raise ValueError("Book ID must be a non-empty string")
+            
+           
+            if not isinstance(book_name, str) or not book_name.strip():
+                raise ValueError("Book name must be a non-empty string")
+            
+         
             if book_id in self.books:
-                self.borrowed_book[student_name]=[book_id]
-                print(f"Student {student_name} borrowed '{self.books[book_id]}'.")
-            else:
-                print(f"Book with ID {book_id} not found.")
-        else:
-            print(f"Student {student_name} is not registered with the library.")
+                raise ValueError(f"Book with ID {book_id} already exists")
+            
+            self.books[book_id] = book_name.strip()
+            print(f"Book '{book_name}' added to the library.")
+            
+        except ValueError as e:
+            print(f"Failed to add book: {str(e)}")
+
+    def register_student(self, student_name):
+       
+        try:
+            if not isinstance(student_name, str) or not student_name.strip():
+                raise ValueError("Student name must be a non-empty string")
+            
+            if student_name in self.students_registered:
+                raise ValueError(f"Student {student_name} is already registered")
+            
+            self.students_registered.add(student_name.strip())
+            print(f"Student {student_name} registered with the library.")
+            
+        except ValueError as e:
+            print(f"Registration failed: {str(e)}")
+
+    def borrow_book(self, student_name, book_id):
+     
+        try:
+         
+            if not isinstance(student_name, str) or not student_name.strip():
+                raise ValueError("Student name must be a non-empty string")
+            
+            if not isinstance(book_id, str) or not book_id.strip():
+                raise ValueError("Book ID must be a non-empty string")
+            
+            student_name = student_name.strip()
+            book_id = book_id.strip()
+            
+           
+            if student_name not in self.students_registered:
+                raise ValueError(f"Student {student_name} is not registered with the library")
+            
+       
+            if book_id not in self.books:
+                raise ValueError(f"Book with ID {book_id} not found")
+            
+           
+            if student_name not in self.borrowed_books:
+                self.borrowed_books[student_name] = []
+            
+           
+            if book_id in self.borrowed_books[student_name]:
+                raise ValueError(f"Student {student_name} has already borrowed this book")
+            
+           
+            self.borrowed_books[student_name].append(book_id)
+            print(f"Student {student_name} borrowed '{self.books[book_id]}'.")
+            
+        except ValueError as e:
+            print(f"Borrowing failed: {str(e)}")
 
     def return_book(self, student_name, book_id):
-        if student_name in self.borrowed_book:
-                if book_id in self.borrowed_book[student_name]:
-                    self.borrowed_book[student_name].remove(book_id)
-                    if len (book_id)==0:
-                        del self.borrowed_book[student_name]
-                print(f"Student {student_name} returned '{self.books[book_id]}'.")
+       
+        try:
             
+            if not isinstance(student_name, str) or not student_name.strip():
+                raise ValueError("Student name must be a non-empty string")
+            
+            if not isinstance(book_id, str) or not book_id.strip():
+                raise ValueError("Book ID must be a non-empty string")
+            
+            student_name = student_name.strip()
+            book_id = book_id.strip()
+            
+       
+            if student_name not in self.students_registered:
+                raise ValueError(f"Student {student_name} is not registered with the library")
+            
+         
+            if book_id not in self.books:
+                raise ValueError(f"Book with ID {book_id} not found")
+            
+          
+            if student_name not in self.borrowed_books or book_id not in self.borrowed_books[student_name]:
+                raise ValueError(f"Student {student_name} hasn't borrowed this book")
+            
+          
+            self.borrowed_books[student_name].remove(book_id)
+            
+           
+            if not self.borrowed_books[student_name]:
+                del self.borrowed_books[student_name]
+            
+            print(f"Student {student_name} returned '{self.books[book_id]}'.")
+            
+        except ValueError as e:
+            print(f"Return failed: {str(e)}")
 
     def get_library_info(self):
-        return f"Library ID: {self.library_id}, Total Books: {len(self.books)}"
+        """Return formatted library information."""
+        return (
+            f"Library ID: {self.library_id}, "
+            f"Total Books: {len(self.books)}, "
+            f"Registered Students: {len(self.students_registered)}"
+        )
 
-    def __str__(self):  
+    def __str__(self):
         return self.get_library_info()
-
 
 
 
