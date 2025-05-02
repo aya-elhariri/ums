@@ -408,15 +408,13 @@ class Schedule:
         self.time_slot = time_slot
         self.location = location
 
-    def assign_schedule(self, schedule_id, course, professor, time_slot, location):
-        ## give it another function (as it does the same as constructor)
-        self.schedule_id = schedule_id
-        self.course = course
-        self.professor = professor
-        self.time_slot = time_slot
-        self.location = location
-        print("Schedule assigned successfully.")
 
+    def assign_schedule(self, schedule_id, course, professor, time_slot, location):
+        
+        if not all([schedule_id, course, professor, time_slot, location]):
+            raise ValueError("All schedule fields must be provided")
+        self.__init__(schedule_id, course, professor, time_slot, location)
+       
     def update_schedule(self, schedule_id=None, course=None, professor=None, time_slot=None, location=None):
         if schedule_id:
             self.schedule_id = schedule_id
