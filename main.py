@@ -86,6 +86,14 @@ class student:
 
 class Exam:
     def __init__(self , exam_id , course ,  duration , student_results ,exam_date=None):
+        if not exam_id:
+            raise ValueError("Exam ID cannot be empty")
+        if not course:
+            raise ValueError("Course cannot be empty")
+        if duration <= 0:
+            raise ValueError("Duration must be positive")
+            
+
         self.exam_id = exam_id
         self.course = course
         self.exam_date = exam_date      
@@ -348,6 +356,15 @@ class Library:
 # arwa:
 class Department:
     def __init__(self, department_id, name, head_of_department):
+        
+        if not department_id:
+            raise ValueError("Department ID cannot be empty")
+        if not name or not isinstance(name, str):
+            raise ValueError("Department name must be a non-empty string")
+        if not head_of_department:
+            raise ValueError("Head of Department cannot be empty")
+            
+
         self.department_id = department_id
         self.name = name
         self.head_of_department = head_of_department
@@ -366,10 +383,21 @@ class Department:
     def list_courses(self, courses):
         self.courses_offered = courses
         return self.courses_offered
+        if not isinstance(courses, list):
+            raise TypeError("Courses must be provided as a list")
+        if not all(courses): 
+            raise ValueError("Course list contains invalid entries")
 
     def list_professors(self, professors):
         self.faculty_members = professors
         return self.faculty_members
+        if not isinstance(professors, list):
+            raise TypeError("Professors must be provided as a list")
+        
+        if not professors:  
+            raise ValueError("Professors list cannot be empty")
+        
+        
 
 
 class Schedule:
