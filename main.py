@@ -1,10 +1,91 @@
+
+
+
+
+
+
 # mohmmed: 
 from datetime import date 
-class student:
-    
-    
+from abc import ABC, abstractmethod
 
-    In_Use_IDs = set()
+
+
+class User (ABC):
+    # eldoctor mkansh kateb password bs m7tagenha fe el login
+    def __init__(self, user_id, name, role, email, password):
+
+
+        try:
+            if not isinstance(user_id, int):
+                    raise TypeError("user_id must be an integer")
+            if not isinstance(name, str) or not name:
+                raise ValueError("name must be a non-empty string")
+            if not isinstance(role, str) or not role:
+                raise ValueError("role must be a non-empty string")
+            if not isinstance(email, str) or '@' not in email:
+                raise ValueError("email must be a valid email address")
+            if not isinstance(password, str) or len(password) < 6:
+                raise ValueError("password must be a string with at least 6 characters")
+            self.user_id = user_id
+            self.name = name
+            self.role = role
+            self.email = email
+            self.__password = password
+            self.logged_in = False
+        except (TypeError, ValueError) as e:
+            print(f"can't initialize User: {e}")
+        
+
+    def login(self):
+        try:
+            email = input("Enter your email: ")
+            password = input("Enter your password: ")
+
+            while not email or not password:
+                print("Email and password cannot be empty.")
+                email = input("Enter your email: ")
+                password = input("Enter your password: ")
+
+            while email != self.email or password != self.__password:
+                print("Invalid email or password.")
+                email = input("Enter your email: ")
+                password = input("Enter your password: ")
+
+            if self.logged_in:
+                print("You are already logged in.")
+
+            else:
+                self.logged_in = True
+                print("Logged in successfully.")
+                # view dashboard
+
+        except Exception as e:
+            print(f"Something went wrong: {e}")
+
+    def logout(self):
+        if self.logged_in:
+            self.logged_in = False
+            print("loged out sucessfully")
+        else:
+            print("you are already logged out")
+
+
+    @abstractmethod
+    def view_dashboard(self):
+        pass
+
+    @abstractmethod
+    def get_info(self):
+        pass
+
+
+
+
+
+
+
+class student (User):
+  In_Use_IDs = set()
     def __init__(self, student_name , student_id , major , email ):
 
         if not isinstance(student_name , str) or not student_name:
@@ -79,7 +160,8 @@ class student:
     def view_grades(self):
         pass
 
-#how do i make it so that it shows the grade of each enrolled course , based on the grade assigned from the "view_grade"
+
+    
 
     def get_info(self):
         print("****************************STUDENT INFO****************************")
@@ -89,6 +171,128 @@ class student:
         print(f"Student's enrolled courses : {self.courses_enrolled}") 
 
         print("********************************************************************")
+
+
+    def view_dashboard(self):
+        self.get_info()
+
+
+
+
+
+
+
+
+
+
+
+class Admin (User):    
+    
+    def __init__(self, admin_id, name, role, contact_info):
+        try:
+            if not all([admin_id, name, role, contact_info]):
+                raise ValueError("All admin fields (ID, name, role, contact_info) must be provided.")
+            if not isinstance(admin_id, str):
+                raise TypeError("Admin ID must be a string.")
+            if not isinstance(name, str):
+                raise TypeError("Name must be a string.")
+            if not isinstance(role, str):
+                raise TypeError("Role must be a string.")
+            if not isinstance(contact_info, (str, dict)):  
+                raise TypeError("Contact info must be a string or a dictionary.")
+
+            self.admin_id = admin_id
+            self.name = name
+            self.role = role
+            self.contact_info = contact_info
+
+        except(ValueError, TypeError) as e:
+            print(f"Error creating Admin: {e}")
+
+    def add_student(self, student_name , student_id , major , email): 
+        if not all([student_name, student_id, major, email]):
+            print("ERROR: All student fields must be provided.")
+            return
+        if student_id in student.In_Use_IDs:
+            print("STUDENT Already Exists!")
+        else:
+            try:
+                new_student = student(student_name, student_id, major, email)
+                student.In_Use_IDs.add(new_student.student_id)
+                print(f"Student {new_student.name} added successfully.")
+            except Exception as e:
+                print(f"ERROR: Failed to create student. Reason: {e}")
+            # lma n3ml db h3ml feature ennha t add llel db
+
+
+    def remove_student(self, student_id):
+        if not student_id:
+            print("ERROR: Student ID is required.")
+            return
+
+        try:
+            if student_id not in student.In_Use_IDs:
+                print("Student Does Not Exist!")
+                return
+            student.In_Use_IDs.remove(student_id)
+        except Exception as e:
+            print(f"Something went wrong: {e}")
+
+
+
+    def assign_professor(self, course, professor):
+        ## check lw el prof. ynf3 ydi elmada de asln wla laa
+        if not course or not professor:
+            print("ERROR: Course and Professor must be provided.")
+            return
+        try:
+            if not hasattr(professor, 'courses_taught') or not isinstance(professor.courses_taught, list):
+                raise AttributeError("Professor object is missing 'courses_taught' list.")
+            
+            if hasattr(course, 'professor') and course.professor:
+                print(f"ERROR: Course {course.course_id} already has a professor assigned: {course.professor.name}")
+                return
+
+            if course in professor.courses_taught:
+                print(f"Professor {professor.name} already teaches this course.")
+                return
+            
+            professor.courses_taught.append(course)
+            course.professor = professor
+            print(f"prof. {professor.name} is assigned to course: {course.course_id}")
+
+        except Exception as e:
+            print(f"Something went wrong: {e}")
+
+    def manage_course(self, operation, course, department):
+        
+        #course_name,course_id,department,credits,professor
+        # if operation.lower() == "create":
+        #     course_name = input("course name : ")
+        #     course_id = input("course id : ")
+        #     department = input("department : ")
+        #     credits = input("credit hours: ")
+        #     professor = input("professor: ")
+
+        if operation.lower() == "add":
+            if course not in department.courses_offered:
+                department.courses_offered.append(course)
+                print(f"course {course} added sucessfuly to department of {department}")
+            else:
+                print("CAN NOT BE ADDED. course already exists")
+        if operation.lower() == "remove":
+            if course in department.courses_offered:
+                department.courses_offered.remove(course)
+                print(f"course {course} removed sucessfuly from department of {department}")
+            else:
+                print("ERROR course doesn't exists")
+
+   
+
+
+
+
+
 
 
 
@@ -450,173 +654,10 @@ class Schedule:
 
 # aya:
 
-class Admin:    
-    
-    def __init__(self, admin_id, name, role, contact_info):
-        try:
-            if not all([admin_id, name, role, contact_info]):
-                raise ValueError("All admin fields (ID, name, role, contact_info) must be provided.")
-            if not isinstance(admin_id, str):
-                raise TypeError("Admin ID must be a string.")
-            if not isinstance(name, str):
-                raise TypeError("Name must be a string.")
-            if not isinstance(role, str):
-                raise TypeError("Role must be a string.")
-            if not isinstance(contact_info, (str, dict)):  
-                raise TypeError("Contact info must be a string or a dictionary.")
-
-            self.admin_id = admin_id
-            self.name = name
-            self.role = role
-            self.contact_info = contact_info
-
-        except(ValueError, TypeError) as e:
-            print(f"Error creating Admin: {e}")
-
-    def add_student(self, student_name , student_id , major , email): 
-        if not all([student_name, student_id, major, email]):
-            print("ERROR: All student fields must be provided.")
-            return
-        if student_id in student.In_Use_IDs:
-            print("STUDENT Already Exists!")
-        else:
-            try:
-                new_student = student(student_name, student_id, major, email)
-                student.In_Use_IDs.add(new_student.student_id)
-                print(f"Student {new_student.name} added successfully.")
-            except Exception as e:
-                print(f"ERROR: Failed to create student. Reason: {e}")
-            # lma n3ml db h3ml feature ennha t add llel db
-
-
-    def remove_student(self, student_id):
-        if not student_id:
-            print("ERROR: Student ID is required.")
-            return
-
-        try:
-            if student_id not in student.In_Use_IDs:
-                print("Student Does Not Exist!")
-                return
-            student.In_Use_IDs.remove(student_id)
-        except Exception as e:
-            print(f"Something went wrong: {e}")
-
-
-
-    def assign_professor(self, course, professor):
-        ## check lw el prof. ynf3 ydi elmada de asln wla laa
-        if not course or not professor:
-            print("ERROR: Course and Professor must be provided.")
-            return
-        try:
-            if not hasattr(professor, 'courses_taught') or not isinstance(professor.courses_taught, list):
-                raise AttributeError("Professor object is missing 'courses_taught' list.")
-            
-            if hasattr(course, 'professor') and course.professor:
-                print(f"ERROR: Course {course.course_id} already has a professor assigned: {course.professor.name}")
-                return
-
-            if course in professor.courses_taught:
-                print(f"Professor {professor.name} already teaches this course.")
-                return
-            
-            professor.courses_taught.append(course)
-            course.professor = professor
-            print(f"prof. {professor.name} is assigned to course: {course.course_id}")
-
-        except Exception as e:
-            print(f"Something went wrong: {e}")
-
-    def manage_course(self, operation, course, department):
-        
-        #course_name,course_id,department,credits,professor
-        # if operation.lower() == "create":
-        #     course_name = input("course name : ")
-        #     course_id = input("course id : ")
-        #     department = input("department : ")
-        #     credits = input("credit hours: ")
-        #     professor = input("professor: ")
-
-        if operation.lower() == "add":
-            if course not in department.courses_offered:
-                department.courses_offered.append(course)
-                print(f"course {course} added sucessfuly to department of {department}")
-            else:
-                print("CAN NOT BE ADDED. course already exists")
-        if operation.lower() == "remove":
-            if course in department.courses_offered:
-                department.courses_offered.remove(course)
-                print(f"course {course} removed sucessfuly from department of {department}")
-            else:
-                print("ERROR course doesn't exists")
 
    
-   
 
 
-class User:
-    # eldoctor mkansh kateb password bs m7tagenha fe el login
-    def __init__(self, user_id, name, role, email, password):
-
-
-        try:
-            if not isinstance(user_id, int):
-                    raise TypeError("user_id must be an integer")
-            if not isinstance(name, str) or not name:
-                raise ValueError("name must be a non-empty string")
-            if not isinstance(role, str) or not role:
-                raise ValueError("role must be a non-empty string")
-            if not isinstance(email, str) or '@' not in email:
-                raise ValueError("email must be a valid email address")
-            if not isinstance(password, str) or len(password) < 6:
-                raise ValueError("password must be a string with at least 6 characters")
-            self.user_id = user_id
-            self.name = name
-            self.role = role
-            self.email = email
-            self.__password = password
-            self.logged_in = False
-        except (TypeError, ValueError) as e:
-            print(f"can't initialize User: {e}")
-        
-
-    def login(self):
-        try:
-            email = input("Enter your email: ")
-            password = input("Enter your password: ")
-
-            while not email or not password:
-                print("Email and password cannot be empty.")
-                email = input("Enter your email: ")
-                password = input("Enter your password: ")
-
-            while email != self.email or password != self.__password:
-                print("Invalid email or password.")
-                email = input("Enter your email: ")
-                password = input("Enter your password: ")
-
-            if self.logged_in:
-                print("You are already logged in.")
-
-            else:
-                self.logged_in = True
-                print("Logged in successfully.")
-
-        except Exception as e:
-            print(f"Something went wrong: {e}")
-
-    def logout(self):
-        if self.logged_in:
-            self.logged_in = False
-            print("loged out sucessfully")
-        else:
-            print("you are already logged out")
-
-
-    def view_dashboard(self):
-        print(f"Dashboard of : {self.name}")
-        print(f"user data: \n Name: {self.name} \n role: {self.role} \n Id: {self.user_id} \n Email: {self.email}")
 
 
 # habiba:
