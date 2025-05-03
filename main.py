@@ -2,8 +2,7 @@
 from datetime import date 
 class student:
     
-    ##remove this from here and handle but in other way
-    available_courses = ["Advanced programming" , "fundementals of programming" , "physics 112" , "Math 111" , "DLD"]
+    
 
     In_Use_IDs = set()
     def __init__(self, student_name , student_id , major , email ):
@@ -34,19 +33,30 @@ class student:
         
 
 
-    def enroll_course(self , course):
-        ##handle if the student already enrolled or not   -------> done 
-        if not course:
+    def is_eligible(self, course_obj):
+        if course_obj.department == self.major:
+            return True 
+        else:
+            return False
+            
+
+ 
+        
+
+    def enroll_course(self , course_obj):
+      
+        if not course_obj:
             raise ValueError("You may have accidentally entered an empty space")
-        if course in self.courses_enrolled:
-            print(f"{self.student_name} is already enrolled in {course}")
+        if course_obj in self.courses_enrolled:
+            print(f"{self.student_name} is already enrolled in {course_obj.course_name}")
             return
-        if course in self.available_courses:
-            self.courses_enrolled.append(course)
-            print (f"{self.student_name} has enrolled in {course}")
+        
+        if self.is_eligible(course_obj):
+            self.courses_enrolled.append(course_obj)
+            print (f"{self.student_name} has enrolled in {course_obj.course_name}")
 
         else:
-            print(f" no such course as {course}")
+            print(f" no such course as {course_obj.course_name}")
 
 
     def drop_course(self , course):
