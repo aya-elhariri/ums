@@ -620,79 +620,112 @@ class User:
 
 
 # habiba:
-class professor:
-    def __init__(self,name ,professor_id,email,department):
-        self.name = name
-        self.professor_id = professor_id
-        self .email = email
-        self.department = department
-        self.courses_taught = []
-        self.contact_info = []
-        self.grades ={}
-        
-        
-    def assign_grades(self,student_name,course,grade, max_grade):
-        if 0 <= grade <= max_grade:
-          if student_name not in self.grades:
-              student_name.grades[course] = grade
-              self.grades[student_name] = {}  
-              self.grades[student_name][course] = grade 
-              print(f"student name is:,{student_name},course:,{course},the grade assigned:,{grade}")
-              
-              
-              
+class Professor:
+    def _init_(self, name, professor_id, email, department):
+        try:
+            if not all(isinstance(val, str) and val.strip() for val in [name, professor_id, email, department]):
+                raise InvalidProfessorData("All professor details must be non-empty strings.")
+
+            self.name = name.strip()
+            self.professor_id = professor_id.strip()
+            self.email = email.strip()
+            self.department = department.strip()
+            self.courses_taught = []
+            self.contact_info = []
+            self.grades = {}
+
+        except InvalidProfessorData as e:
+            print(f"Error initializing professor: {e}")
+            raise
+
+    def assign_grades(self, student_name, course, grade, max_grade):
+        try:
+            if not isinstance(student_name, str) or not student_name:
+                raise GradeAssignmentError("Student name must be a non-empty string.")
+
+            if not isinstance(course, str) or not course:
+                raise GradeAssignmentError("Course name must be a non-empty string.")
+
+            if not (isinstance(grade, (int, float)) and isinstance(max_grade, (int, float))):
+                raise GradeAssignmentError("Grades must be numeric.")
+
+            if not (0 <= grade <= max_grade):
+                raise GradeAssignmentError("Grade must be within the valid range.")
+
+            if student_name not in self.grades:
+                self.grades[student_name] = {}
+
+            self.grades[student_name][course] = grade
+            print(f"student name is: {student_name}, course: {course}, the grade assigned: {grade}")
+
+        except GradeAssignmentError as e:
+            print(f"Error assigning grade: {e}")
+            raise
+
     def view_students(self):
-        if not self.grades:
-            print("No students have been assigned grades.")
-        else:
+        try:
+            if not self.grades:
+                print("No students have been assigned grades.")
+                return
 
             for student, courses in self.grades.items():
                 print(f"Student: {student}")
-            for course, grade in courses.items():
+                for course, grade in courses.items():
                     print(f"  Course: {course}, Grade: {grade}")
 
-    
-    
-    
+        except Exception as e:
+            print(f"Error viewing students: {e}")
+            raise ViewStudentsError from e
+
     def get_professor_info(self):
-        print(f"professor name:,{self.name},id:,{self.professor_id},email:,{self.email},department:,{self.department}")
-        
-        
-        
+        try:
+            print(f"Professor name: {self.name}, ID: {self.professor_id}, Email: {self.email}, Department: {self.department}")
+        except Exception as e:
+            print(f"Error retrieving professor info: {e}")
+            raise ProfessorInfoError from e
 
 
-class course:
-    def __init__(self ,course_name,course_id,department,credits,professor):
-      self.course_name=course_name
-      self.course_id=course_id
-      self.department=department
-      self.credits=credits
-      self.professor=professor
-      self.enrolled_students=[]
-      
-      
-      
-    def add_students(self,student_name):
-        if student_name not in self.enrolled_students:
-          self.enrolled_students.append(student_name)
-          print(f"{student_name}has enrolled in  {self.course_name} course")
-        else:
-            print(f"{student_name}is already enrolled in this course")
-            
-            
-            
+class Course:
+    def _init_(self, course_name, course_id, department, credits, professor):
+        if not all(isinstance(val, str) and val.strip() for val in [course_name, course_id, department, professor]):
+            raise ValueError("Course name, ID, department, and professor must be non-empty strings.")
+        
+        if not isinstance(credits, int) or credits <= 0:
+            raise ValueError("Credits must be a positive integer.")
+
+        self.course_name = course_name.strip()
+        self.course_id = course_id.strip()
+        self.department = department.strip()
+        self.credits = credits
+        self.professor = professor.strip()
+        self.enrolled_students = []
+
+    def add_students(self, student_name):
+        if not isinstance(student_name, str) or not student_name.strip():
+            raise ValueError("Student name must be a non-empty string.")
+        
+        if student_name in self.enrolled_students:
+            raise ValueError(f"{student_name} is already enrolled in this course.")
+        
+        self.enrolled_students.append(student_name)
+
     def remove_course(self, student_name):
-       if student_name in self.enrolled_students:
-          self.enrolled_students.remove(student_name)
-          print(f"{student_name},is removed from{self.course_name},course")
-       else:
-              print(f"{student_name}is already not enrolled in this course")
-              
-              
-              
+        if not isinstance(student_name, str) or not student_name.strip():
+            raise ValueError("Student name must be a non-empty string.")
+        
+        if student_name not in self.enrolled_students:
+            raise ValueError(f"{student_name} is not enrolled in this course.")
+        
+        self.enrolled_students.remove(student_name)
+
     def get_course_info(self):
-         print(f"course_name:{ self.course_name},course_id:{self.course_id},department:{self.department},credits:{self.credits},course_professor:{self.professor}")
-    
+        try:
+            return (
+                f"course_name: {self.course_name}, course_id: {self.course_id}, "
+                f"department: {self.department}, credits: {self.credits}, course_professor: {self.professor}"
+            )
+        except Exception:
+            raise ValueError("Failed to retrieve course info.")
     
 ################################################################################################################################
 std = student("mohamed" , 124234 , "Cns" , "user@gmail.com" )
