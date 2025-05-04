@@ -671,6 +671,8 @@ class Schedule:
 
 
 # habiba:
+
+
 class Professor (User):
     def _init_(self, name, professor_id, email, department, password):
         super()._init_(professor_id, name, email, password)
