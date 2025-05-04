@@ -85,53 +85,56 @@ class User (ABC):
 
 
 class student (User):
-  In_Use_IDs = set()
-    def __init__(self, student_name , student_id , major , email ):
+    In_Use_IDs = set()
+    def _init_(self, student_name , student_id , major , email, password ):
+
+        super()._init_(student_id, student_name, email, password)
 
         if not isinstance(student_name , str) or not student_name:
             raise ValueError("name must be a string and cannot be empty space!")
-        
+
         if not isinstance(email , str) or not email:
             raise ValueError("email must be a string and cannot be empty space!")
-        
+
         if '@' not in email or '.' not in email:
             raise ValueError("email must follow this format -->  'user@example.com'")
-        
+
         if not isinstance(student_id , int) or not (100000 <= student_id <= 999999):
             raise ValueError("ID must be an integer and must be 6 digits long")
-        
+
         if student_id in student.In_Use_IDs:
             raise ValueError("ID is already in use. please enter a different ID")
         student.In_Use_IDs.add(student_id)
-        
+
 
         self.student_name = student_name
         self.student_id = student_id
         self.major = major
         self.email = email
         self.courses_enrolled = []
-        self.grades = {}
-        
+        self.__grades = {}
+
 
 
     def is_eligible(self, course_obj):
         if course_obj.department == self.major:
-            return True 
+            return True
         else:
             return False
-            
 
- 
-        
+    def set_grades(self , course ,new_grade):
+        self.__grades[course] = new_grade
+
+
 
     def enroll_course(self , course_obj):
-      
+
         if not course_obj:
             raise ValueError("You may have accidentally entered an empty space")
         if course_obj in self.courses_enrolled:
             print(f"{self.student_name} is already enrolled in {course_obj.course_name}")
             return
-        
+
         if self.is_eligible(course_obj):
             self.courses_enrolled.append(course_obj)
             print (f"{self.student_name} has enrolled in {course_obj.course_name}")
@@ -140,37 +143,39 @@ class student (User):
             print(f" no such course as {course_obj.course_name}")
 
 
-    def drop_course(self , course):
-        if not course:
-            raise ValueError("You may have accidentally entered an empty space")
-        
-        if course in self.available_courses:
+    def drop_course(self , course_obj):
+            if not course_obj:
+                raise ValueError("You may have accidentally entered an empty space")
 
-            if course in self.courses_enrolled:
-                self.courses_enrolled.remove(course)
-                print(f"{self.student_name} has dropped {course}")
+
+
+            if course_obj in self.courses_enrolled:
+                self.courses_enrolled.remove(course_obj)
+                print(f"{self.student_name} has dropped {course_obj.course_name}")
 
             else:
                 print(f"{self.student_name} is not currently enrolled in this course")
 
-        else:
-            print("this course does not exist")
+
 
 
     def view_grades(self):
-        pass
+        for grade in self.grades:
+            print (grade)
 
 
-    
+
+
 
     def get_info(self):
-        print("****************************STUDENT INFO****************************")
+        print("*********STUDENT INFO*********")
 
         print(f"Student's name : {self.student_name} , Student's id : {self.student_id} , student's major : {self.major}")
         print(f"student's email : {self.email}")
-        print(f"Student's enrolled courses : {self.courses_enrolled}") 
+        for course in self.courses_enrolled:
+            print(f"course : {course.course_name}")
 
-        print("********************************************************************")
+        print("************************")
 
 
     def view_dashboard(self):
@@ -201,7 +206,7 @@ class Admin (User):
             if not isinstance(contact_info, (str, dict)):  
                 raise TypeError("Contact info must be a string or a dictionary.")
 
-            self.admin_id = admin_id
+            self.__admin_id = admin_id
             self.name = name
             self.role = role
             self.contact_info = contact_info
@@ -312,7 +317,7 @@ class Exam:
         self.course = course
         self.exam_date = exam_date      
         self.duration = duration
-        self.student_results = {}
+        self.__student_results = {}
 
     def schedule_exam(self , year , month , day):
         while True:
@@ -330,6 +335,9 @@ class Exam:
 
     ## handle the grades attribute of Student and Professor classes
        
+    def set_student_results(self , student , result):
+        self.__student_results[student] = result
+
 
     def display_student_results(self):
         print("")
@@ -661,47 +669,60 @@ class Schedule:
 
 
 # habiba:
-class Professor:
-    def _init_(self, name, professor_id, email, department):
+class Professor (User):
+    def _init_(self, name, professor_id, email, department, password):
+        super()._init_(professor_id, name, email, password)
+
         try:
             if not all(isinstance(val, str) and val.strip() for val in [name, professor_id, email, department]):
-                raise InvalidProfessorData("All professor details must be non-empty strings.")
+                raise ValueError("All professor details must be non-empty strings.")
 
             self.name = name.strip()
-            self.professor_id = professor_id.strip()
+            self.__professor_id = professor_id.strip()
             self.email = email.strip()
             self.department = department.strip()
             self.courses_taught = []
             self.contact_info = []
             self.grades = {}
 
-        except InvalidProfessorData as e:
+        except ValueError as e:
             print(f"Error initializing professor: {e}")
             raise
-
-    def assign_grades(self, student_name, course, grade, max_grade):
+    
+    def assign_grades(self, student_obj, course, grade, max_grade , exam_obj):
         try:
-            if not isinstance(student_name, str) or not student_name:
-                raise GradeAssignmentError("Student name must be a non-empty string.")
+            if not isinstance(student_obj, student) or not student_obj:
+                raise ValueError("invalid student object.")
 
             if not isinstance(course, str) or not course:
-                raise GradeAssignmentError("Course name must be a non-empty string.")
+                raise ValueError("Course name must be a non-empty string.")
 
             if not (isinstance(grade, (int, float)) and isinstance(max_grade, (int, float))):
-                raise GradeAssignmentError("Grades must be numeric.")
+                raise ValueError("Grades must be numeric.")
 
             if not (0 <= grade <= max_grade):
-                raise GradeAssignmentError("Grade must be within the valid range.")
+                raise ValueError("Grade must be within the valid range.")
 
-            if student_name not in self.grades:
-                self.grades[student_name] = {}
+            if student_obj not in self.grades:
+                self.grades[student_obj] = {}
 
-            self.grades[student_name][course] = grade
-            print(f"student name is: {student_name}, course: {course}, the grade assigned: {grade}")
 
-        except GradeAssignmentError as e:
+            self.grades[student_obj][course] = grade
+            student_obj.set_grades(course , grade)
+            exam_obj.set_grades(student_obj , grade)
+            print(f"student name is: {student_obj.student_name}, course: {course}, the grade assigned: {grade}")
+            
+            
+
+        except ValueError as e:
             print(f"Error assigning grade: {e}")
             raise
+
+        
+
+
+
+    
 
     def view_students(self):
         try:
@@ -716,21 +737,25 @@ class Professor:
 
         except Exception as e:
             print(f"Error viewing students: {e}")
-            raise ViewStudentsError from e
+            raise ValueError from e
 
-    def get_professor_info(self):
+    def get_info(self):
         try:
-            print(f"Professor name: {self.name}, ID: {self.professor_id}, Email: {self.email}, Department: {self.department}")
+            print(f"Professor name: {self.name}, ID: {self.__professor_id}, Email: {self.email}, Department: {self.department}")
         except Exception as e:
             print(f"Error retrieving professor info: {e}")
-            raise ProfessorInfoError from e
+            raise ValueError from e
+    def view_dashboard(self):
+        self.get_info()
+
+
 
 
 class Course:
     def _init_(self, course_name, course_id, department, credits, professor):
         if not all(isinstance(val, str) and val.strip() for val in [course_name, course_id, department, professor]):
             raise ValueError("Course name, ID, department, and professor must be non-empty strings.")
-        
+
         if not isinstance(credits, int) or credits <= 0:
             raise ValueError("Credits must be a positive integer.")
 
@@ -744,19 +769,19 @@ class Course:
     def add_students(self, student_name):
         if not isinstance(student_name, str) or not student_name.strip():
             raise ValueError("Student name must be a non-empty string.")
-        
+
         if student_name in self.enrolled_students:
             raise ValueError(f"{student_name} is already enrolled in this course.")
-        
+
         self.enrolled_students.append(student_name)
 
     def remove_course(self, student_name):
         if not isinstance(student_name, str) or not student_name.strip():
             raise ValueError("Student name must be a non-empty string.")
-        
+
         if student_name not in self.enrolled_students:
             raise ValueError(f"{student_name} is not enrolled in this course.")
-        
+
         self.enrolled_students.remove(student_name)
 
     def get_course_info(self):
@@ -767,7 +792,19 @@ class Course:
             )
         except Exception:
             raise ValueError("Failed to retrieve course info.")
-    
+
+################################################################################################################################
+
+
+
+s130 = student("Aya", 123456, "csit", "aya@gmail.com", "121212")
+s130.view_dashboard()
+
+csc111 = Course("prog.", "CSC111", "csit",3, "issa")
+s130.enroll_course(csc111)
+s130.view_dashboard()
+s130.drop_course(csc111)
+s130.view_dashboard()
 ################################################################################################################################
 std = student("mohamed" , 124234 , "Cns" , "user@gmail.com" )
 std.enroll_course("physics 112")
