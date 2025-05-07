@@ -292,13 +292,13 @@ class Admin (User):
         self.get_info()
 
     def get_info(self):
-        return {
+        print ({
             "admin_id": self.__admin_id,
             "name": self.name,
             "role": self.role,
-            "contact_info": self.contact_info,
-            "managed_departments": [d.name for d in self.managed_departments]
-        }
+            "contact_info": self.contact_info, 
+            #"managed_departments": [d.name for d in self.managed_departments]
+        })
 
 
 
@@ -716,7 +716,7 @@ class Professor (User):
 
             self.grades[student_obj][course] = grade
             student_obj.set_grades(course , grade)
-            exam_obj.set_grades(student_obj , grade)
+            exam_obj.record_result(student_obj , grade)
             print(f"student name is: {student_obj.student_name}, course: {course}, the grade assigned: {grade}")
 
 
@@ -824,6 +824,7 @@ s130.view_grades()
 
 
 ex = Exam(1423 , "Advanced programming" , 1 , 1 , 1 )
+#
 ex.schedule_exam(2024,5,26)
 ex.record_result("57/60" , "Mohamed")
 ex.display_student_results()
@@ -868,24 +869,24 @@ cou1.remove_course("ghadeeer")
 #cou1. remove_course("emi")
 cou1.get_course_info()
 
-prof1=Professor("dr.john","p799776","john@gmail.com","computer science", 23456)
+prof1=Professor("dr.john","p799776","john@gmail.com","computer science", "23456")
 #prof1.assign_grades("Aya","math",78,90,ex)
-prof1.assign_grades("ghadeer","german",88,90,ex)
-prof1.assign_grades("kim","math",56,90,ex)
+prof1.assign_grades(s130,"german",88,90,ex)
+#prof1.assign_grades("kim","math",56,90,ex)
 prof1.view_students()
 prof1.get_info()
 prof1.view_dashboard()
+s130.view_grades()
 
 
 ################################################################################################################################
 
-#admn301 = Admin(301,"Ahmed", "student Affairs", "admin301@gmail.com")
-#admn301.add_student(cou1,std)
-#admn301.remove_student(cou1,std)
-#admn301.assign_professor(cou1,prof1)
-#admn301.manage_course("add", cou1, department1)
-#admn301.get_info()
-#admn301.view_dashboard()
+admn301 = Admin("301","Ahmed", "student Affairs", "admin301@gmail.com")
+
+
+admn301.get_info()
+admn301.view_dashboard()
+admn301.add_student("m" , 123456 , "csit" , "asfads@asdas.com")
 
 #user5871 = User(5871, "Mohamed", "Student", "mohamed@example.com", "12345")
 #user5871.view_dashboard()
