@@ -2,6 +2,7 @@
 from datetime import date
 from abc import ABC, abstractmethod
 import sqlite3
+from multipledispatch import dispatch
 
 
 
@@ -649,12 +650,21 @@ class Schedule:
         self.time_slot = time_slot
         self.location = location
 
-
+    @dispatch(str , str , str , str, str, str)
     def assign_schedule(self, schedule_id, course, professor, time_slot, location):
 
         if not all([schedule_id, course, professor, time_slot, location]):
             raise ValueError("All schedule fields must be provided")
         self._init_(schedule_id, course, professor, time_slot, location)
+
+    @dispatch(str, str, str)
+    def assign_schedule(self, schedule_id, course, professor):
+        if not all([schedule_id, course, professor]):
+            raise ValueError("All schedule fields must be provided")
+        self._init_(schedule_id, course, professor)
+
+
+        
 
     def update_schedule(self, schedule_id=None, course=None, professor=None, time_slot=None, location=None):
         if schedule_id:
