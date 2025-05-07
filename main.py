@@ -11,7 +11,7 @@ class User (ABC):
 
 
         try:
-            if not isinstance(user_id, int):
+            if not isinstance(user_id, (int, str)):
                     raise TypeError("user_id must be an integer")
             if not isinstance(name, str) or not name:
                 raise ValueError("name must be a non-empty string")
@@ -711,12 +711,12 @@ class Professor (User):
                 raise ValueError("Grade must be within the valid range.")
 
             if student_obj not in self.grades:
-                self.grades[student_obj] = {}
+                self.grades[student_obj.student_name] = {}
 
 
-            self.grades[student_obj][course] = grade
+            self.grades[student_obj.student_name][course] = grade
             student_obj.set_grades(course , grade)
-            exam_obj.record_result(student_obj , grade)
+            exam_obj.record_result( grade, student_obj.student_name )
             print(f"student name is: {student_obj.student_name}, course: {course}, the grade assigned: {grade}")
 
 
@@ -805,16 +805,18 @@ class Course:
 
 
 s130 = student("Aya", 123456, "csit", "aya@gmail.com", "121212")
-s130.view_dashboard()
-#s130.login()
-csc111 = Course("prog.", "CSC111", "csit",3, "issa")
-s130.enroll_course(csc111)
-s130.view_dashboard()
-s130.drop_course(csc111)
-s130.view_dashboard()
-s130.is_eligible(csc111)
-s130.set_grades(csc111 , 24)
 s130.view_grades()
+
+# s130.view_dashboard()
+# #s130.login()
+# csc111 = Course("prog.", "CSC111", "csit",3, "issa")
+# s130.enroll_course(csc111)
+# s130.view_dashboard()
+# s130.drop_course(csc111)
+# s130.view_dashboard()
+# s130.is_eligible(csc111)
+# s130.set_grades(csc111 , 24)
+# #s130.view_grades()
 ################################################################################################################################
 #std = student("mohamed" , 124234 , "Cns" , "user@gmail.com" , 12345)
 #std.enroll_course("physics 112")
@@ -824,11 +826,11 @@ s130.view_grades()
 
 
 ex = Exam(1423 , "Advanced programming" , 1 , 1 , 1 )
-#
-ex.schedule_exam(2024,5,26)
-ex.record_result("57/60" , "Mohamed")
-ex.display_student_results()
-ex.view_exam_info()
+# #
+# ex.schedule_exam(2024,5,26)
+# ex.record_result("57/60" , "Mohamed")
+# ex.display_student_results()
+# ex.view_exam_info()
 ################################################################################################################################
 
 #classroom_101 = Classroom("101", "Building A, Room 101", 50)
@@ -860,33 +862,33 @@ ex.view_exam_info()
 ################################################################################################################################
 
 
-cou1=Course("advanced","csc1022","programming",4453,"ahmad")
-cou1.add_students("jana")
-cou1.add_students("ammar")
-cou1.add_students("jissi")
-cou1.add_students("ghadeeer")
-cou1.remove_course("ghadeeer")
-#cou1. remove_course("emi")
-cou1.get_course_info()
+# cou1=Course("advanced","csc1022","programming",4453,"ahmad")
+# cou1.add_students("jana")
+# cou1.add_students("ammar")
+# cou1.add_students("jissi")
+# cou1.add_students("ghadeeer")
+# cou1.remove_course("ghadeeer")
+# #cou1. remove_course("emi")
+# cou1.get_course_info()
 
-prof1=Professor("dr.john","p799776","john@gmail.com","computer science", "23456")
-#prof1.assign_grades("Aya","math",78,90,ex)
+prof1=Professor("dr.john","799776","john@gmail.com","computer science", "234756")
+# #prof1.assign_grades("Aya","math",78,90,ex)
 prof1.assign_grades(s130,"german",88,90,ex)
-#prof1.assign_grades("kim","math",56,90,ex)
-prof1.view_students()
-prof1.get_info()
-prof1.view_dashboard()
-s130.view_grades()
+# #prof1.assign_grades("kim","math",56,90,ex)
+# prof1.view_students()
+# prof1.get_info()
+# prof1.view_dashboard()
+# s130.view_grades()
 
 
 ################################################################################################################################
 
-admn301 = Admin("301","Ahmed", "student Affairs", "admin301@gmail.com")
+# admn301 = Admin("301","Ahmed", "student Affairs", "admin301@gmail.com")
 
 
-admn301.get_info()
-admn301.view_dashboard()
-admn301.add_student("m" , 123456 , "csit" , "asfads@asdas.com")
+# admn301.get_info()
+# admn301.view_dashboard()
+# admn301.add_student("m" , 123456 , "csit" , "asfads@asdas.com")
 
 #user5871 = User(5871, "Mohamed", "Student", "mohamed@example.com", "12345")
 #user5871.view_dashboard()
