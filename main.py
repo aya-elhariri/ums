@@ -2,7 +2,6 @@
 from datetime import date
 from abc import ABC, abstractmethod
 import sqlite3
-import Database
 
 
 
@@ -154,11 +153,26 @@ class student (User):
 
 
 
+    #def view_grades(self):
+        #for grade in self.__grades:
+            #print(grade)
+
     def view_grades(self):
-        for grade in self.__grades:
-            print (grade)
-
-
+      if not self.__grades:
+        print("No grades available.")
+        return
+        
+      print("\nSTUDENT GRADES")
+      print("--------------")
+      for course, grade in self.__grades.items():
+        # If course is an object with a course_name attribute, use that
+        if hasattr(course, 'course_name'):
+            course_name = course.course_name
+        else:
+            course_name = str(course)
+            
+        print(f"Course: {course_name}, Grade: {grade}")
+        print()
 
 
 
@@ -806,17 +820,19 @@ class Course:
 
 s130 = student("Aya", 123456, "csit", "aya@gmail.com", "121212")
 s130.view_grades()
+s130.view_dashboard()
+#s130.login()
+csc111 = Course("prog.", "CSC111", "csit",3, "issa")
+s130.enroll_course(csc111)
+s130.view_dashboard()
+s130.drop_course(csc111)
+s130.view_dashboard()
+#s130.is_eligible(csc111)
+s130.set_grades(csc111 , 24)
 
-# s130.view_dashboard()
-# #s130.login()
-# csc111 = Course("prog.", "CSC111", "csit",3, "issa")
-# s130.enroll_course(csc111)
-# s130.view_dashboard()
-# s130.drop_course(csc111)
-# s130.view_dashboard()
-# s130.is_eligible(csc111)
-# s130.set_grades(csc111 , 24)
-# #s130.view_grades()
+
+
+#s130.view_grades()
 ################################################################################################################################
 #std = student("mohamed" , 124234 , "Cns" , "user@gmail.com" , 12345)
 #std.enroll_course("physics 112")
@@ -827,68 +843,66 @@ s130.view_grades()
 
 ex = Exam(1423 , "Advanced programming" , 1 , 1 , 1 )
 # #
-# ex.schedule_exam(2024,5,26)
-# ex.record_result("57/60" , "Mohamed")
-# ex.display_student_results()
-# ex.view_exam_info()
+ex.schedule_exam(2024,5,26)
+ex.record_result("57/60" , "Mohamed")
+ex.display_student_results()
+ex.view_exam_info()
 ################################################################################################################################
 
-#classroom_101 = Classroom("101", "Building A, Room 101", 50)
-#classroom_101.allocate_class("Introduction to Programming", "Monday 10:00 AM - 12:00 PM", 40)
-#print("Classroom availability at Monday 10:00 AM - 12:00 PM:", classroom_101.check_availability("Monday 10:00 AM - 12:00 PM"))
-#print(classroom_101)
-#main_library = Library("L001")
-#main_library.add_book("B001", "Python Programming")
-#main_library.add_book("B002", "Data Structures and Algorithms")
-#main_library.register_student("John Doe")
-#main_library.borrow_book("John Doe", "B001")
-#main_library.return_book("John Doe", "B001")
-#print(main_library)
-################################################################################################################################
-
-
-#department1 = Department(1, "Computer Science", "Dr. Johnson")
-#print(department1.get_department_info())
-#print("Courses Offered:", department1.list_courses(["CS101", "CS102"]))
-#print("Faculty Members:", department1.list_professors(["Dr. Smith", "Dr. Brown"]))
-#print(department1.get_department_info())
-
-#schedule1 = Schedule(101, "Math 101", "Dr. Smith", "10:00 AM - 11:00 AM", "Room 202")
-#print(schedule1.view_schedule())
-#schedule1.update_schedule(time_slot="11:00 AM - 12:00 PM")
-#print(schedule1.view_schedule())
-
-
+classroom_101 = Classroom("101", "Building A, Room 101", 50)
+classroom_101.allocate_class("Introduction to Programming", "Monday 10:00 AM - 12:00 PM", 40)
+print("Classroom availability at Monday 10:00 AM - 12:00 PM:", classroom_101.check_availability("Monday 10:00 AM - 12:00 PM"))
+print(classroom_101)
+main_library = Library("L001")
+main_library.add_book("B001", "Python Programming")
+main_library.add_book("B002", "Data Structures and Algorithms")
+main_library.register_student("John Doe")
+main_library.borrow_book("John Doe", "B001")
+main_library.return_book("John Doe", "B001")
+print(main_library)
 ################################################################################################################################
 
 
-# cou1=Course("advanced","csc1022","programming",4453,"ahmad")
-# cou1.add_students("jana")
-# cou1.add_students("ammar")
-# cou1.add_students("jissi")
-# cou1.add_students("ghadeeer")
-# cou1.remove_course("ghadeeer")
-# #cou1. remove_course("emi")
-# cou1.get_course_info()
+department1 = Department(1, "Computer Science", "Dr. Johnson")
+print(department1.get_department_info())
+print("Courses Offered:", department1.list_courses(["CS101", "CS102"]))
+print("Faculty Members:", department1.list_professors(["Dr. Smith", "Dr. Brown"]))
+print(department1.get_department_info())
+
+schedule1 = Schedule(101, "Math 101", "Dr. Smith", "10:00 AM - 11:00 AM", "Room 202")
+print(schedule1.view_schedule())
+schedule1.update_schedule(time_slot="11:00 AM - 12:00 PM")
+print(schedule1.view_schedule())
+
+
+################################################################################################################################
+
+
+cou1=Course("advanced","csc1022","programming",4453,"ahmad")
+cou1.add_students("jana")
+cou1.add_students("ammar")
+cou1.add_students("jissi")
+cou1.add_students("ghadeeer")
+cou1.remove_course("ghadeeer")
+#cou1. remove_course("emi")
+cou1.get_course_info()
 
 prof1=Professor("dr.john","799776","john@gmail.com","computer science", "234756")
-# #prof1.assign_grades("Aya","math",78,90,ex)
+#prof1.assign_grades("Aya","math",78,90,ex)
 prof1.assign_grades(s130,"german",88,90,ex)
-# #prof1.assign_grades("kim","math",56,90,ex)
-# prof1.view_students()
-# prof1.get_info()
-# prof1.view_dashboard()
-# s130.view_grades()
-
-
+#prof1.assign_grades("kim","math",56,90,ex)
+prof1.view_students()
+prof1.get_info()
+prof1.view_dashboard()
+s130.view_grades()
 ################################################################################################################################
 
-# admn301 = Admin("301","Ahmed", "student Affairs", "admin301@gmail.com")
+admn301 = Admin("301","Ahmed", "student Affairs", "admin301@gmail.com")
 
 
-# admn301.get_info()
-# admn301.view_dashboard()
-# admn301.add_student("m" , 123456 , "csit" , "asfads@asdas.com")
+admn301.get_info()
+admn301.view_dashboard()
+admn301.add_student("m" , 123456 , "csit" , "asfads@asdas.com")
 
 #user5871 = User(5871, "Mohamed", "Student", "mohamed@example.com", "12345")
 #user5871.view_dashboard()
