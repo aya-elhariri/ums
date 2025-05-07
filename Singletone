@@ -1,0 +1,19 @@
+```
+# Database usage
+db = Database.get_instance()
+
+# Library usage
+library = Library.get_instance()
+library.add_book("B001", "Python Programming")
+
+# Classroom management
+classroom_manager = ClassroomManager.get_instance()
+classroom_manager.add_classroom("101", "Building A", 50)
+classroom = classroom_manager.get_classroom("101")
+classroom.allocate_class("Math 101", "Monday 9:00", 30)
+
+# Department management
+dept_manager = DepartmentManager.get_instance()
+dept_manager.add_department(1, "Computer Science", "Dr. Smith")
+cs_dept = dept_manager.get_department(1)
+```
