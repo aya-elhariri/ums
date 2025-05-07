@@ -1,3 +1,150 @@
+``````
+# Database class (Singleton)
+class Database:
+    instance = None
+
+    @staticmethod
+    def get_instance():
+        if Database.instance is None:
+            Database.instance = Database()
+        return Database.instance
+
+    def __init__(self):
+        if Database.instance is not None:
+            raise Exception("This class is a singleton! Use get_instance() instead.")
+        self.connection = sqlite3.connect('university.db')
+        self.create_tables()
+
+    def create_tables(self):
+        cursor = self.connection.cursor()
+        cursor.execute('''CREATE TABLE IF NOT EXISTS students
+                         (id INTEGER PRIMARY KEY, name TEXT, email TEXT, major TEXT)''')
+        cursor.execute('''CREATE TABLE IF NOT EXISTS professors
+                         (id TEXT PRIMARY KEY, name TEXT, email TEXT, department TEXT)''')
+        cursor.execute('''CREATE TABLE IF NOT EXISTS courses
+                         (id TEXT PRIMARY KEY, name TEXT, department TEXT, credits INTEGER)''')
+        self.connection.commit()
+
+
+# Library class (Singleton)
+class Library:
+    instance = None
+
+    @staticmethod
+    def get_instance():
+        if Library.instance is None:
+            Library.instance = Library("L001")  # Default library ID
+        return Library.instance
+
+    def __init__(self, library_id):
+        if Library.instance is not None:
+            raise Exception("This class is a singleton! Use get_instance() instead.")
+        
+        try:
+            if not isinstance(library_id, str) or not library_id:
+                raise ValueError("Library ID must be a non-empty string")
+            
+            self.library_id = library_id.strip()
+            self.books = {} 
+            self.students_registered = set()  
+            self.borrowed_books = {}
+            
+        except ValueError as e:
+            print(f"Error creating Library: {str(e)}")
+            raise
+
+    # Keep all existing Library methods the same...
+
+
+# ClassroomManager class (Singleton)
+class ClassroomManager:
+    instance = None
+
+    @staticmethod
+    def get_instance():
+        if ClassroomManager.instance is None:
+            ClassroomManager.instance = ClassroomManager()
+        return ClassroomManager.instance
+
+    def __init__(self):
+        if ClassroomManager.instance is not None:
+            raise Exception("This class is a singleton! Use get_instance() instead.")
+        self.classrooms = {}
+
+    def add_classroom(self, classroom_id, location, capacity):
+        if classroom_id in self.classrooms:
+            raise ValueError(f"Classroom {classroom_id} already exists")
+        self.classrooms[classroom_id] = Classroom(classroom_id, location, capacity)
+
+    def get_classroom(self, classroom_id):
+        return self.classrooms.get(classroom_id)
+
+
+# DepartmentManager class (Singleton)
+class DepartmentManager:
+    instance = None
+
+    @staticmethod
+    def get_instance():
+        if DepartmentManager.instance is None:
+            DepartmentManager.instance = DepartmentManager()
+        return DepartmentManager.instance
+
+    def __init__(self):
+        if DepartmentManager.instance is not None:
+            raise Exception("This class is a singleton! Use get_instance() instead.")
+        self.departments = {}
+
+    def add_department(self, department_id, name, head_of_department):
+        if department_id in self.departments:
+            raise ValueError(f"Department {department_id} already exists")
+        self.departments[department_id] = Department(department_id, name, head_of_department)
+
+    def get_department(self, department_id):
+        return self.departments.get(department_id)
+
+
+# Modified Department class (not a singleton)
+class Department:
+    def __init__(self, department_id, name, head_of_department):
+        if not department_id:
+            raise ValueError("Department ID cannot be empty")
+        if not name or not isinstance(name, str):
+            raise ValueError("Department name must be a non-empty string")
+        if not head_of_department:
+            raise ValueError("Head of Department cannot be empty")
+            
+        self.department_id = department_id
+        self.name = name
+        self.head_of_department = head_of_department
+        self.courses_offered = []
+        self.faculty_members = []
+
+    # Keep all existing Department methods...
+
+
+# Modified Classroom class (not a singleton)
+class Classroom:
+    def __init__(self, classroom_id, location, capacity):
+        try:
+            if not isinstance(classroom_id, str) or not classroom_id:
+                raise ValueError("Classroom ID must be a non-empty string")
+            if not isinstance(location, str) or not location:
+                raise ValueError("Location must be a non-empty string")
+            capacity = int(capacity)
+            if capacity <= 0:
+                raise ValueError("Capacity must be a positive integer")
+            
+            self.classroom_id = classroom_id.strip()
+            self.location = location.strip()
+            self.capacity = capacity
+            self.schedule = {}
+            
+        except ValueError as e:
+            print(f"Error creating Classroom: {e}")
+            raise
+
+    # Keep all existing Classroom methods...
 ```
 # Database usage
 db = Database.get_instance()
