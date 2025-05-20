@@ -6,10 +6,8 @@ from multipledispatch import dispatch
 
 
 
-class User (ABC):
+class User(ABC):
     def __init__(self, user_id, name, role, email, password):
-
-
         try:
             if not isinstance(user_id, (int, str)):
                     raise TypeError("user_id must be an integer")
@@ -30,7 +28,6 @@ class User (ABC):
         except (TypeError, ValueError) as e:
             print(f"can't initialize User: {e}")
 
-
     def login(self):
         try:
             email = input("Enter your email: ")
@@ -48,11 +45,9 @@ class User (ABC):
 
             if self.logged_in:
                 print("You are already logged in.")
-
             else:
                 self.logged_in = True
                 print("Logged in successfully.")
-                # view dashboard
 
         except Exception as e:
             print(f"Something went wrong: {e}")
@@ -64,7 +59,6 @@ class User (ABC):
         else:
             print("you are already logged out")
 
-
     @abstractmethod
     def view_dashboard(self):
         pass
@@ -73,34 +67,54 @@ class User (ABC):
     def get_info(self):
         pass
 
+class UserProxy(User):
+    def __init__(self, real_user):
+        self._real_user = real_user
 
+    def login(self):
+        if not self._real_user.logged_in:
+            self._real_user.login()
+        else:
+            print("User is already logged in")
 
+    def logout(self):
+        if self._real_user.logged_in:
+            self._real_user.logout()
+        else:
+            print("User is already logged out")
 
+    def view_dashboard(self):
+        if self._real_user.logged_in:
+            self._real_user.view_dashboard()
+        else:
+            print("Please login first to view dashboard")
 
+    def get_info(self):
+        if self._real_user.logged_in:
+            self._real_user.get_info()
+        else:
+            print("Please login first to view info")
 
-
-class student (User):
+class student(User):
     In_Use_IDs = set()
-    def __init__(self, student_name , student_id , major , email, password ):
+    def __init__(self, student_name, student_id, major, email, password):
+        super().__init__(student_id, student_name,'student', email=email, password=password)
 
-        super().__init__(student_id, student_name,'student' ,email=email, password=password)
-
-        if not isinstance(student_name , str) or not student_name:
+        if not isinstance(student_name, str) or not student_name:
             raise ValueError("name must be a string and cannot be empty space!")
 
-        if not isinstance(email , str) or not email:
+        if not isinstance(email, str) or not email:
             raise ValueError("email must be a string and cannot be empty space!")
 
         if '@' not in email or '.' not in email:
             raise ValueError("email must follow this format -->  'user@example.com'")
 
-        if not isinstance(student_id , int) or not (100000 <= student_id <= 999999):
+        if not isinstance(student_id, int) or not (100000 <= student_id <= 999999):
             raise ValueError("ID must be an integer and must be 6 digits long")
 
         if student_id in student.In_Use_IDs:
             raise ValueError("ID is already in use. please enter a different ID")
         student.In_Use_IDs.add(student_id)
-
 
         self.student_name = student_name
         self.student_id = student_id
@@ -109,21 +123,16 @@ class student (User):
         self.courses_enrolled = []
         self.__grades = {}
 
-
-
     def is_eligible(self, course_obj):
         if course_obj.department == self.major:
             return True
         else:
             return False
 
-    def set_grades(self , course ,new_grade):
+    def set_grades(self, course, new_grade):
         self.__grades[course] = new_grade
 
-
-
-    def enroll_course(self , course_obj):
-
+    def enroll_course(self, course_obj):
         if not course_obj:
             raise ValueError("You may have accidentally entered an empty space")
         if course_obj in self.courses_enrolled:
@@ -132,77 +141,47 @@ class student (User):
 
         if self.is_eligible(course_obj):
             self.courses_enrolled.append(course_obj)
-            print (f"{self.student_name} has enrolled in {course_obj.course_name}")
-
+            print(f"{self.student_name} has enrolled in {course_obj.course_name}")
         else:
             print(f" no such course as {course_obj.course_name}")
 
+    def drop_course(self, course_obj):
+        if not course_obj:
+            raise ValueError("You may have accidentally entered an empty space")
 
-    def drop_course(self , course_obj):
-            if not course_obj:
-                raise ValueError("You may have accidentally entered an empty space")
-
-
-
-            if course_obj in self.courses_enrolled:
-                self.courses_enrolled.remove(course_obj)
-                print(f"{self.student_name} has dropped {course_obj.course_name}")
-
-            else:
-                print(f"{self.student_name} is not currently enrolled in this course")
-
-
-
-
-    #def view_grades(self):
-        #for grade in self.__grades:
-            #print(grade)
+        if course_obj in self.courses_enrolled:
+            self.courses_enrolled.remove(course_obj)
+            print(f"{self.student_name} has dropped {course_obj.course_name}")
+        else:
+            print(f"{self.student_name} is not currently enrolled in this course")
 
     def view_grades(self):
-      if not self.__grades:
-        print("No grades available.")
-        return
-        
-      print("\nSTUDENT GRADES")
-      print("--------------")
-      for course, grade in self.__grades.items():
-        # If course is an object with a course_name attribute, use that
-        if hasattr(course, 'course_name'):
-            course_name = course.course_name
-        else:
-            course_name = str(course)
+        if not self.__grades:
+            print("No grades available.")
+            return
             
-        print(f"Course: {course_name}, Grade: {grade}")
-        print()
-
-
+        print("\nSTUDENT GRADES")
+        print("--------------")
+        for course, grade in self.__grades.items():
+            if hasattr(course, 'course_name'):
+                course_name = course.course_name
+            else:
+                course_name = str(course)
+            print(f"Course: {course_name}, Grade: {grade}")
+            print()
 
     def get_info(self):
         print("STUDENT INFO")
-
         print(f"Student's name : {self.student_name} , Student's id : {self.student_id} , student's major : {self.major}")
         print(f"student's email : {self.email}")
         for course in self.courses_enrolled:
             print(f"course : {course.course_name}")
-
         print("")
-
 
     def view_dashboard(self):
         self.get_info()
 
-
-
-
-
-
-
-
-
-
-
-class Admin (User):
-
+class Admin(User):
     def __init__(self, admin_id, name, role, contact_info):
         try:
             if not all([admin_id, name, role, contact_info]):
@@ -224,7 +203,7 @@ class Admin (User):
         except(ValueError, TypeError) as e:
             print(f"Error creating Admin: {e}")
 
-    def add_student(self, student_name , student_id , major , email):
+    def add_student(self, student_name, student_id, major, email):
         if not all([student_name, student_id, major, email]):
             print("ERROR: All student fields must be provided.")
             return
@@ -237,8 +216,6 @@ class Admin (User):
                 print(f"Student {new_student.name} added successfully.")
             except Exception as e:
                 print(f"ERROR: Failed to create student. Reason: {e}")
-            # lma n3ml db h3ml feature ennha t add llel db
-
 
     def remove_student(self, student_id):
         if not student_id:
@@ -253,10 +230,7 @@ class Admin (User):
         except Exception as e:
             print(f"Something went wrong: {e}")
 
-
-
     def assign_professor(self, course, professor):
-        ## check lw el prof. ynf3 ydi elmada de asln wla laa
         if not course or not professor:
             print("ERROR: Course and Professor must be provided.")
             return
@@ -280,15 +254,6 @@ class Admin (User):
             print(f"Something went wrong: {e}")
 
     def manage_course(self, operation, course, department):
-
-        #course_name,course_id,department,credits,professor
-        # if operation.lower() == "create":
-        #     course_name = input("course name : ")
-        #     course_id = input("course id : ")
-        #     department = input("department : ")
-        #     credits = input("credit hours: ")
-        #     professor = input("professor: ")
-
         if operation.lower() == "add":
             if course not in department.courses_offered:
                 department.courses_offered.append(course)
@@ -302,7 +267,6 @@ class Admin (User):
             else:
                 print("ERROR course doesn't exists")
 
-
     def view_dashboard(self):
         self.get_info()
 
@@ -311,20 +275,11 @@ class Admin (User):
             "admin_id": self.__admin_id,
             "name": self.name,
             "role": self.role,
-            "contact_info": self.contact_info, 
-            #"managed_departments": [d.name for d in self.managed_departments]
+            "contact_info": self.contact_info,
         })
 
-
-
-
-
-
-
-
-
 class Exam:
-    def __init__(self , exam_id , course ,  duration , student_results ,exam_date=None):
+    def __init__(self, exam_id, course, duration, student_results, exam_date=None):
         if not exam_id:
             raise ValueError("Exam ID cannot be empty")
         if not course:
@@ -332,32 +287,26 @@ class Exam:
         if duration <= 0:
             raise ValueError("Duration must be positive")
 
-
         self.exam_id = exam_id
         self.course = course
         self.exam_date = exam_date
         self.duration = duration
         self.__student_results = {}
 
-    def schedule_exam(self , year , month , day):
+    def schedule_exam(self, year, month, day):
         while True:
             try:
-                self.exam_date = date(year , month , day)
+                self.exam_date = date(year, month, day)
                 break
             except ValueError:
                 print("Invalid date. please enter a valid date")
 
-
-
-    def record_result(self , score , student_name):
+    def record_result(self, score, student_name):
         self.__student_results[student_name] = score
         print(f"{student_name}' results have been saved as {score}")
 
-    ## handle the grades attribute of Student and Professor classes
-
-    def set_student_results(self , student , result):
+    def set_student_results(self, student, result):
         self.__student_results[student] = result
-
 
     def display_student_results(self):
         print("")
@@ -377,15 +326,11 @@ class Exam:
             print("exam has no scheduled date yet")
         print("*")
 
-
-
 class Classroom:
     def __init__(self, classroom_id, location, capacity):
         try:
-
             if not isinstance(classroom_id, str) or not classroom_id:
                 raise ValueError("Classroom ID must be a non-empty string")
-
 
             if not isinstance(location, str) or not location:
                 raise ValueError("Location must be a non-empty string")
@@ -402,32 +347,25 @@ class Classroom:
         except ValueError as e:
             print(f"Error creating Classroom: {e}")
 
-
     def allocate_class(self, course_name, time_slot, num_students):
         try:
-
             if not isinstance(course_name, str) or not course_name:
                 raise ValueError("Course name must be a non-empty string")
-
 
             if not isinstance(time_slot, str) or not time_slot:
                 raise ValueError("Time slot must be a non-empty string")
 
-
             if not isinstance(num_students, int) or num_students <= 0:
                 raise ValueError("Number of students must be a positive integer")
 
-
             if not self.check_availability(time_slot):
                 raise ValueError(f"Classroom {self.classroom_id} is already booked at {time_slot}")
-
 
             if num_students > self.capacity:
                 raise ValueError(
                     f"Classroom capacity exceeded (Capacity: {self.capacity}, "
                     f"Requested: {num_students})"
                 )
-
 
             self.schedule[time_slot] = course_name
             print(f"Classroom {self.classroom_id} allocated for {course_name} at {time_slot}.")
@@ -445,7 +383,6 @@ class Classroom:
         except ValueError as e:
             print(f"Availability check failed: {e}")
 
-
     def get_classroom_info(self):
         return (
             f"Classroom ID: {self.classroom_id}, "
@@ -456,10 +393,8 @@ class Classroom:
     def __str__(self):
         return self.get_classroom_info()
 
-
 class Library:
     def __init__(self, library_id):
-
         try:
             if not isinstance(library_id, str) or not library_id:
                 raise ValueError("Library ID must be a non-empty string")
@@ -467,23 +402,19 @@ class Library:
             self.library_id = library_id.strip()
             self.books = {}
             self.students_registered = set()
-            self.borrowed_books = {}  # {student_name: [book_id1, book_id2]}
+            self.borrowed_books = {}
 
         except ValueError as e:
             print(f"Error creating Library: {str(e)}")
             raise
 
     def add_book(self, book_id, book_name):
-
         try:
-
             if not isinstance(book_id, str) or not book_id.strip():
                 raise ValueError("Book ID must be a non-empty string")
 
-
             if not isinstance(book_name, str) or not book_name.strip():
                 raise ValueError("Book name must be a non-empty string")
-
 
             if book_id in self.books:
                 raise ValueError(f"Book with ID {book_id} already exists")
@@ -495,7 +426,6 @@ class Library:
             print(f"Failed to add book: {str(e)}")
 
     def register_student(self, student_name):
-
         try:
             if not isinstance(student_name, str) or not student_name.strip():
                 raise ValueError("Student name must be a non-empty string")
@@ -510,9 +440,7 @@ class Library:
             print(f"Registration failed: {str(e)}")
 
     def borrow_book(self, student_name, book_id):
-
         try:
-
             if not isinstance(student_name, str) or not student_name.strip():
                 raise ValueError("Student name must be a non-empty string")
 
@@ -522,22 +450,17 @@ class Library:
             student_name = student_name.strip()
             book_id = book_id.strip()
 
-
             if student_name not in self.students_registered:
                 raise ValueError(f"Student {student_name} is not registered with the library")
-
 
             if book_id not in self.books:
                 raise ValueError(f"Book with ID {book_id} not found")
 
-
             if student_name not in self.borrowed_books:
                 self.borrowed_books[student_name] = []
 
-
             if book_id in self.borrowed_books[student_name]:
                 raise ValueError(f"Student {student_name} has already borrowed this book")
-
 
             self.borrowed_books[student_name].append(book_id)
             print(f"Student {student_name} borrowed '{self.books[book_id]}'.")
@@ -546,9 +469,7 @@ class Library:
             print(f"Borrowing failed: {str(e)}")
 
     def return_book(self, student_name, book_id):
-
         try:
-
             if not isinstance(student_name, str) or not student_name.strip():
                 raise ValueError("Student name must be a non-empty string")
 
@@ -558,21 +479,16 @@ class Library:
             student_name = student_name.strip()
             book_id = book_id.strip()
 
-
             if student_name not in self.students_registered:
                 raise ValueError(f"Student {student_name} is not registered with the library")
-
 
             if book_id not in self.books:
                 raise ValueError(f"Book with ID {book_id} not found")
 
-
             if student_name not in self.borrowed_books or book_id not in self.borrowed_books[student_name]:
                 raise ValueError(f"Student {student_name} hasn't borrowed this book")
 
-
             self.borrowed_books[student_name].remove(book_id)
-
 
             if not self.borrowed_books[student_name]:
                 del self.borrowed_books[student_name]
@@ -583,7 +499,6 @@ class Library:
             print(f"Return failed: {str(e)}")
 
     def get_library_info(self):
-        """Return formatted library information."""
         return (
             f"Library ID: {self.library_id}, "
             f"Total Books: {len(self.books)}, "
@@ -592,8 +507,6 @@ class Library:
 
     def __str__(self):
         return self.get_library_info()
-
-
 
 
 class Department:
