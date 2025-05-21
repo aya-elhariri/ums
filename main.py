@@ -74,126 +74,123 @@ class User (ABC):
         pass
 
 
-# جزء البروكسي هنا
+
 class UserProxy:
     def __init__(self, user_id, name, role, email, password=None):
-        self._real_user = None  # سيتم إنشاء كائن المستخدم الفعلي عند الحاجة
+        self._real_user = None  
         self.user_id = user_id
         self.name = name
         self.role = role
         self.email = email
-        self.__password = password  # تخزين كلمة المرور للمصادقة
+        self.__password = password  
         self.logged_in = False
-        self.access_log = []  # سجل للوصول
+        self.access_log = []  
         
     def _check_access(self):
-        """التحقق مما إذا كان المستخدم لديه حق الوصول لإجراء العمليات"""
+        
         if not self.logged_in:
-            print("تم رفض الوصول! يرجى تسجيل الدخول أولاً.")
+            print("invalid")
             return False
         return True
     
     def _log_activity(self, activity):
-        """تسجيل نشاط المستخدم"""
+        
         from datetime import datetime
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.access_log.append(f"{timestamp}: {self.name} ({self.role}) - {activity}")
     
     def _initialize_real_user(self):
-        """التهيئة الكسولة لكائن المستخدم الحقيقي"""
+        
         if self._real_user is None:
-            # إنشاء المستخدم المناسب بناءً على الدور
+            
             if self.role.lower() == "student":
-                # هذا مبسط - سيحتاج إلى تهيئة مناسبة
                 self._real_user = student(self.name, self.user_id, "Unknown", self.email, self.__password)
             elif self.role.lower() == "professor":
                 self._real_user = Professor(self.name, self.user_id, self.email, "Unknown", self.__password)
             elif self.role.lower() == "admin":
                 self._real_user = Admin(self.user_id, self.name, self.role, self.email)
             else:
-                raise ValueError(f"دور غير معروف: {self.role}")
+                raise ValueError(f"invalid role: {self.role}")
         return self._real_user
     
     def login(self):
-        """بروكسي لطريقة تسجيل الدخول مع سجل إضافي"""
+        
         try:
-            email = input("أدخل بريدك الإلكتروني: ")
-            password = input("أدخل كلمة المرور: ")
+            email = input("enter your email")
+            password = input("enter your passsword ")
             
             if email == self.email and password == self.__password:
                 self.logged_in = True
-                self._log_activity("تم تسجيل الدخول بنجاح")
-                print(f"المستخدم {self.name} قام بتسجيل الدخول بنجاح.")
+                self._log_activity("logged in succesfully")
+                print(f"user {self.name} has logged in succesfully")
                 return True
             else:
-                self._log_activity("محاولة تسجيل دخول فاشلة")
-                print("بريد إلكتروني أو كلمة مرور غير صالحة.")
+                self._log_activity("invalid log in operation")
+                print("invalid email or pass")
                 return False
         except Exception as e:
-            self._log_activity(f"خطأ في تسجيل الدخول: {e}")
-            print(f"خطأ في تسجيل الدخول: {e}")
+            self._log_activity(f"invalid log in: {e}")
+            print(f"error logging in{e}")
             return False
     
     def logout(self):
-        """بروكسي لطريقة تسجيل الخروج"""
+        
         if self.logged_in:
             self.logged_in = False
-            self._log_activity("تم تسجيل الخروج")
-            print(f"المستخدم {self.name} قام بتسجيل الخروج بنجاح.")
+            self._log_activity("logged off succesfully")
+            print(f"user{self.name} logged off succesfully.")
         else:
-            print("أنت لست مسجل الدخول.")
-    
+            print("logged off succesfully")    
     def view_dashboard(self):
-        """بروكسي لعرض لوحة التحكم مع التحكم في الوصول"""
+        
         if self._check_access():
-            self._log_activity("تم الوصول إلى لوحة التحكم")
-            # تهيئة كسولة للمستخدم الحقيقي
+            self._log_activity("success")
+            
             real_user = self._initialize_real_user()
             real_user.view_dashboard()
     
     def get_info(self):
-        """بروكسي للحصول على المعلومات مع التحكم في الوصول"""
+        
         if self._check_access():
-            self._log_activity("تم الوصول إلى المعلومات")
+            self._log_activity("info recieved")
             real_user = self._initialize_real_user()
             real_user.get_info()
     
     def view_access_log(self):
-        """عرض سجل وصول المستخدم"""
+        
         if self._check_access():
-            print(f"\nسجل نشاط المستخدم {self.name}:")
+            print(f"\nlog: {self.name}:")
             for entry in self.access_log:
                 print(f"- {entry}")
             print()
             
-    # إضافة طرق إضافية لبروكسي طرق المستخدم الأخرى حسب الحاجة
-    # على سبيل المثال، إذا كان طالبًا، فقد نرغب في عمل بروكسي لطرق التسجيل
+    
     def enroll_course(self, course_obj):
-        """بروكسي لطريقة تسجيل الطالب في المقرر"""
+        
         if self._check_access() and self.role.lower() == "student":
-            self._log_activity(f"محاولة التسجيل في المقرر {course_obj.course_name}")
+            self._log_activity(f"trying to enroll in {course_obj.course_name}")
             real_user = self._initialize_real_user()
             real_user.enroll_course(course_obj)
         elif self.role.lower() != "student":
-            print("يمكن للطلاب فقط التسجيل في المقررات.")
+            print("only students can enroll in courses")
     
     def drop_course(self, course_obj):
-        """بروكسي لطريقة إلغاء تسجيل الطالب من المقرر"""
+        
         if self._check_access() and self.role.lower() == "student":
-            self._log_activity(f"محاولة إلغاء التسجيل من المقرر {course_obj.course_name}")
+            self._log_activity(f"dropping {course_obj.course_name}")
             real_user = self._initialize_real_user()
             real_user.drop_course(course_obj)
         elif self.role.lower() != "student":
-            print("يمكن للطلاب فقط إلغاء التسجيل من المقررات.")
+            print("only students can drop courses.")
     
     def assign_grades(self, student_obj, course, grade, max_grade, exam_obj):
-        """بروكسي لتخصيص الدرجات للطلاب (للأساتذة فقط)"""
+       
         if self._check_access() and self.role.lower() == "professor":
-            self._log_activity(f"تعيين درجة {grade} للطالب {student_obj.student_name} في المقرر {course}")
+            self._log_activity(f" assigning grade: {grade} for student {student_obj.student_name}  in course {course}")
             real_user = self._initialize_real_user()
             real_user.assign_grades(student_obj, course, grade, max_grade, exam_obj)
         elif self.role.lower() != "professor":
-            print("يمكن للأساتذة فقط تخصيص الدرجات.")
+            print("only professors can assign grades.")
 
 
 class student (User):
@@ -1044,9 +1041,9 @@ admn301.add_student("m" , 123456 , "csit" , "asfads@asdas.com")
 ###################################################################################################################
 # Example usage
 user_proxy = UserProxy(12345, "John Smith", "student", "john@example.com", "password123")
-user_proxy.login()  # This will prompt for credentials
-user_proxy.view_dashboard()  # This will check access and then delegate to the real user
+user_proxy.login()  
+user_proxy.view_dashboard() 
 
-# Without logging in first:
+
 another_user = UserProxy(67890, "Jane Doe", "professor", "jane@example.com", "securepass")
-another_user.view_dashboard()  # This will be denied because user is not logged in
+another_user.view_dashboard()  
